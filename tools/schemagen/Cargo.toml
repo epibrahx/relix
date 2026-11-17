@@ -1,0 +1,13 @@
+[package]
+name = "schemagen"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+epibrhx-core.workspace = true
+serde_json.workspace = true
+
+[lints]
+workspace = true

@@ -1,0 +1,41 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/epibrhx-core",
+    "crates/epibrhx-sources",
+    "crates/epibrhx-layout",
+    "crates/epibrhx-app",
+    "tools/schemagen",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "Apache-2.0"
+
+[workspace.dependencies]
+epibrhx-core = { path = "crates/epibrhx-core" }
+epibrhx-sources = { path = "crates/epibrhx-sources" }
+epibrhx-layout = { path = "crates/epibrhx-layout" }
+
+anyhow = "1"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+toml = "0.8"
+tracing = "0.1"
+gpui-kit = "0.10.0"
+
+[workspace.lints.clippy]
+dbg_macro = "deny"
+todo = "deny"
+
+[profile.dev.package]
+gpui-pre = { opt-level = 3 }
+gpui-component = { opt-level = 3 }
+gpui-kit = { opt-level = 3 }
+gpui-kit-assets = { opt-level = 3 }
+gpui-pre-platform = { opt-level = 3 }
+rustybuzz = { opt-level = 3 }
+taffy = { opt-level = 3 }
+ttf-parser = { opt-level = 3 }
