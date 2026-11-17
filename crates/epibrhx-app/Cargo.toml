@@ -13,6 +13,7 @@ epibrhx-core.workspace = true
 epibrhx-layout.workspace = true
 gpui-kit.workspace = true
 schemagen = { path = "../../tools/schemagen" }
+serde_json.workspace = true
 tracing.workspace = true
 web-time.workspace = true
 
