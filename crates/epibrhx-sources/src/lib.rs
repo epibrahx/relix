@@ -1,15 +1,7 @@
 //! Native schema loaders for SQLite, PostgreSQL, and SQL DDL files.
 
-pub fn sources_ready() -> bool {
-    !epibrhx_core::core_version().is_empty()
-}
+pub mod error;
+pub mod sqlite;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn sources_links_core() {
-        assert!(sources_ready());
-    }
-}
+pub use error::SourceError;
+pub use sqlite::{load_sqlite_connection, load_sqlite_file};
