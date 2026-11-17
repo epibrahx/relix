@@ -9,7 +9,7 @@
 
 ## Phase 1 — 数据模型 + SQLite 加载器（已完成）
 
-- [x] P1-T1: `epibrhx-core` 统一数据模型与 `type_family` 归一化（含 JSON round-trip 与表驱动单测）
+- [x] P1-T1: `epibrhx-core` 统一数据模型与 `type_family` 归一化
 - [x] P1-T2: `epibrhx-sources::sqlite` 只读加载器
 - [x] P1-T3: 三套 fixtures（`01_ecommerce`、`02_blog_cms`、`03_wild_legacy`）
 - [x] P1-T4: 复合 PK/FK、自引用、无主键表、视图边界处理与 `insta` 快照测试
@@ -25,9 +25,17 @@
 ## Phase 3 — 关系推断引擎（已完成）
 
 - [x] P3-T1: `epibrhx-core::infer` 确定性规则引擎（C1–C4，无打分，歧义候选不自动画线）
-- [x] P3-T2: `epibrhx-core::morphology` 单复数（含不规则词）、驼峰/下划线及可配置表前缀处理
-- [x] P3-T3: 三套 fixtures 期望关系黄金文件与精确率/召回率回归测试（`02_blog_cms` P=1.000/R=0.857，`03_wild_legacy` P=1.000/R=0.889）
-- [x] P3-T4: `epibrhx-core::config` + `epibrhx-sources::config`（`epibrhx.toml` 读写、确认/驳回关系持久化与恢复）
+- [x] P3-T2: `epibrhx-core::morphology` 单复数、驼峰/下划线及可配置表前缀处理
+- [x] P3-T3: 三套 fixtures 期望关系黄金文件与精确率/召回率回归测试
+- [x] P3-T4: `epibrhx-core::config` + `epibrhx-sources::config`（`epibrhx.toml` 持久化）
+
+## Phase 4 — 图画布性能验证（已完成，决策关卡：✅ 通过）
+
+- [x] P4-T1: `tools/schemagen` 合成 schema 生成器（100 / 500 / 2000 规模）
+- [x] P4-T2: `epibrhx-layout` 分层布局（去环、分层、重心排序、防重叠坐标分配、N 层聚焦子图）
+- [x] P4-T3: GPUI Kit ER 图最小画布（表卡片、正交实/虚线连线、滚轮缩放、拖拽平移、节点拖拽）
+- [x] P4-T4: 视口裁剪 + 三级 LOD 降级绘制
+- [x] P4-T5: 桌面与 WASM 双端 100/500/2000 性能实测并产出 `docs/SPIKE-REPORT.md`
 
 ## Next
-- Phase 4 — 图画布性能验证（决策关卡：P4-T1 ~ P4-T5）
+- Phase 5 — MVP 界面（P5-T1 ~ P5-T12）

@@ -1520,9 +1520,11 @@ dependencies = [
  "epibrhx-sources",
  "gpui-kit",
  "log",
+ "schemagen",
  "tracing",
  "tracing-wasm",
  "wasm-bindgen",
+ "web-time",
 ]
 
 [[package]]
