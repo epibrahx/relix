@@ -2,7 +2,7 @@
 **/*.rs.bk
 *.swp
 .DS_Store
-www/node_modules/
-www/dist/
-www/src/wasm/
+**/node_modules/
+**/dist/
+crates/epibrhx-app/www/src/wasm/
 epibrhx.toml
