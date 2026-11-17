@@ -2,21 +2,27 @@
 
 pub mod app_view;
 pub mod canvas;
+pub mod panels;
+pub mod source_loader;
+pub mod state;
 
 #[cfg(not(target_family = "wasm"))]
-pub fn run_desktop(bench_tables: Option<usize>, exit_on_done: bool) {
+pub fn run_desktop(
+    initial_source: source_loader::SourceSpec,
+    auto_bench: bool,
+    exit_on_done: bool,
+) {
     use gpui_kit::AppContext as _;
+    use gpui_kit::component::Root;
     use gpui_kit::{WindowOptions, application, assets::Assets, init, open_window};
-
-    let initial_tables = bench_tables.unwrap_or(100);
-    let auto_bench = bench_tables.is_some();
 
     application().with_assets(Assets).run(move |cx| {
         init(cx);
-        open_window(WindowOptions::default(), cx, move |_, cx| {
-            cx.new(|cx| {
-                app_view::EpibrhxSpikeView::new(initial_tables, auto_bench, exit_on_done, cx)
-            })
+        open_window(WindowOptions::default(), cx, move |window, cx| {
+            let view = cx.new(|cx| {
+                app_view::EpibrhxApp::new(initial_source, auto_bench, exit_on_done, window, cx)
+            });
+            cx.new(|cx| Root::new(view, window, cx))
         })
         .expect("Failed to open EPIBRHX window");
         cx.activate(true);
@@ -31,12 +37,13 @@ mod wasm_entry {
     use std::sync::Arc;
 
     use gpui_kit::assets::Assets;
-    use gpui_kit::component::theme::{Theme, ThemeRegistry};
+    use gpui_kit::component::Root;
     use gpui_kit::web::{CanvasFontFallback, WebBackendPreference, WebPlatform};
     use gpui_kit::{App, AppContext as _, Application, ApplicationHandle, WindowOptions};
     use wasm_bindgen::prelude::*;
 
-    use crate::app_view::EpibrhxSpikeView;
+    use crate::app_view::EpibrhxApp;
+    use crate::source_loader::{BuiltinFixture, SourceSpec};
 
     thread_local! {
         static APPLICATION: RefCell<Option<ApplicationHandle>> = const { RefCell::new(None) };
@@ -60,7 +67,10 @@ mod wasm_entry {
             .with_http_client(http_client)
             .with_assets(Assets::new(""));
 
-        let initial_tables = bench_tables.unwrap_or(100);
+        let initial_source = match bench_tables {
+            Some(n) => SourceSpec::Bench(n),
+            None => SourceSpec::Builtin(BuiltinFixture::BlogCms),
+        };
         let auto_bench = bench_tables.is_some();
 
         let launch = move |cx: &mut App| {
@@ -73,15 +83,10 @@ mod wasm_entry {
                 .add_fonts(vec![system_font, ui_font])
                 .expect("Failed to load embedded WASM fonts");
 
-            let registry = ThemeRegistry::global(cx);
-            let config = registry.default_light_theme().clone();
-            Theme::update(cx, |theme| {
-                theme.apply_config(&config);
-                theme.font_family = "Inter Variable".into();
-            });
-
-            gpui_kit::open_window(WindowOptions::default(), cx, move |_, cx| {
-                cx.new(|cx| EpibrhxSpikeView::new(initial_tables, auto_bench, false, cx))
+            gpui_kit::open_window(WindowOptions::default(), cx, move |window, cx| {
+                let view =
+                    cx.new(|cx| EpibrhxApp::new(initial_source, auto_bench, false, window, cx));
+                cx.new(|cx| Root::new(view, window, cx))
             })
             .expect("Failed to open WASM window");
             cx.activate(true);
