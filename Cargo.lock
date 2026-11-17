@@ -1533,64 +1533,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "epibrhx-app"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "console_error_panic_hook",
- "console_log",
- "epibrhx-core",
- "epibrhx-layout",
- "epibrhx-sources",
- "gpui-kit",
- "log",
- "schemagen",
- "serde_json",
- "tracing",
- "tracing-wasm",
- "wasm-bindgen",
- "web-time",
-]
-
-[[package]]
-name = "epibrhx-core"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "sqlparser",
- "toml 0.8.23",
-]
-
-[[package]]
-name = "epibrhx-layout"
-version = "0.1.0"
-dependencies = [
- "epibrhx-core",
- "petgraph",
-]
-
-[[package]]
-name = "epibrhx-sources"
-version = "0.1.0"
-dependencies = [
- "dirs 6.0.0",
- "epibrhx-core",
- "insta",
- "rusqlite",
- "rustls",
- "rustls-native-certs",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror 2.0.21",
- "tokio",
- "tokio-postgres",
- "tokio-postgres-rustls",
- "tracing",
-]
-
-[[package]]
 name = "equator"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5515,6 +5457,64 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d6f6ff9a378485b298a5286656da665ba74413d36db0979633275d2e708145d4"
 
 [[package]]
+name = "relix-app"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "console_error_panic_hook",
+ "console_log",
+ "gpui-kit",
+ "log",
+ "relix-core",
+ "relix-layout",
+ "relix-sources",
+ "schemagen",
+ "serde_json",
+ "tracing",
+ "tracing-wasm",
+ "wasm-bindgen",
+ "web-time",
+]
+
+[[package]]
+name = "relix-core"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "sqlparser",
+ "toml 0.8.23",
+]
+
+[[package]]
+name = "relix-layout"
+version = "0.1.0"
+dependencies = [
+ "petgraph",
+ "relix-core",
+]
+
+[[package]]
+name = "relix-sources"
+version = "0.1.0"
+dependencies = [
+ "dirs 6.0.0",
+ "insta",
+ "relix-core",
+ "rusqlite",
+ "rustls",
+ "rustls-native-certs",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 2.0.21",
+ "tokio",
+ "tokio-postgres",
+ "tokio-postgres-rustls",
+ "tracing",
+]
+
+[[package]]
 name = "renderdoc-sys"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5849,7 +5849,7 @@ name = "schemagen"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "epibrhx-core",
+ "relix-core",
  "serde_json",
 ]
 

@@ -1,10 +1,10 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/epibrhx-core",
-    "crates/epibrhx-sources",
-    "crates/epibrhx-layout",
-    "crates/epibrhx-app",
+    "crates/relix-core",
+    "crates/relix-sources",
+    "crates/relix-layout",
+    "crates/relix-app",
     "tools/schemagen",
 ]
 
@@ -14,9 +14,9 @@ edition = "2024"
 license = "Apache-2.0"
 
 [workspace.dependencies]
-epibrhx-core = { path = "crates/epibrhx-core" }
-epibrhx-sources = { path = "crates/epibrhx-sources" }
-epibrhx-layout = { path = "crates/epibrhx-layout" }
+relix-core = { path = "crates/relix-core" }
+relix-sources = { path = "crates/relix-sources" }
+relix-layout = { path = "crates/relix-layout" }
 
 anyhow = "1"
 dirs = "6"

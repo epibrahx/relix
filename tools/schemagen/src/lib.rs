@@ -1,4 +1,4 @@
-use epibrhx_core::{Column, Dialect, Index, Relation, Schema, Table, TableKind, TypeFamily};
+use relix_core::{Column, Dialect, Index, Relation, Schema, Table, TableKind, TypeFamily};
 
 const DOMAINS: &[&str] = &[
     "auth",

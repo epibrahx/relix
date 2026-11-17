@@ -7,4 +7,4 @@ cd "$ROOT_DIR"
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets "$@" -- -D warnings
 cargo test --workspace "$@"
-cargo check -p epibrhx-core -p epibrhx-layout --target wasm32-unknown-unknown "$@"
+cargo check -p relix-core -p relix-layout --target wasm32-unknown-unknown "$@"

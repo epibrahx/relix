@@ -1,0 +1,424 @@
+---
+source: crates/relix-sources/tests/sqlite_loader.rs
+expression: schema
+---
+{
+  "dialect": "sqlite",
+  "tables": [
+    {
+      "id": "main.authors",
+      "schema": "main",
+      "name": "authors",
+      "kind": "table",
+      "comment": null,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "email",
+          "data_type": "VARCHAR(255)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "display_name",
+          "data_type": "VARCHAR(128)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "bio",
+          "data_type": "TEXT",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "email"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "main.categories",
+      "schema": "main",
+      "name": "categories",
+      "kind": "table",
+      "comment": null,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "slug",
+          "data_type": "VARCHAR(128)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "data_type": "VARCHAR(128)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "slug"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "main.comments",
+      "schema": "main",
+      "name": "comments",
+      "kind": "table",
+      "comment": null,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "post_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "author_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "parent_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "body",
+          "data_type": "TEXT",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "created_at",
+          "data_type": "TIMESTAMP",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "main.media_assets",
+      "schema": "main",
+      "name": "media_assets",
+      "kind": "table",
+      "comment": null,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "UUID",
+          "type_family": "uuid",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "post_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "uploader_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "mime_type",
+          "data_type": "VARCHAR(128)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "url",
+          "data_type": "TEXT",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "main.post_tags",
+      "schema": "main",
+      "name": "post_tags",
+      "kind": "table",
+      "comment": null,
+      "columns": [
+        {
+          "name": "post_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "tag_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "post_id",
+        "tag_id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "main.posts",
+      "schema": "main",
+      "name": "posts",
+      "kind": "table",
+      "comment": null,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "author_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "category_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "parent_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "slug",
+          "data_type": "VARCHAR(255)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "title",
+          "data_type": "VARCHAR(255)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "body",
+          "data_type": "TEXT",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "published_at",
+          "data_type": "TIMESTAMP",
+          "type_family": "timestamp",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "slug"
+        ]
+      ],
+      "indexes": [
+        {
+          "name": "idx_posts_author",
+          "columns": [
+            "author_id"
+          ],
+          "unique": false
+        },
+        {
+          "name": "idx_posts_category",
+          "columns": [
+            "category_id"
+          ],
+          "unique": false
+        }
+      ]
+    },
+    {
+      "id": "main.tags",
+      "schema": "main",
+      "name": "tags",
+      "kind": "table",
+      "comment": null,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "data_type": "VARCHAR(64)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "name"
+        ]
+      ],
+      "indexes": []
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel_22b8a8c3450e45920cad81f0cb52cfee",
+      "from_table": "main.post_tags",
+      "from_columns": [
+        "post_id"
+      ],
+      "to_table": "main.posts",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_af9d1da3c607154b4e4c0695a19b46f6",
+      "from_table": "main.post_tags",
+      "from_columns": [
+        "tag_id"
+      ],
+      "to_table": "main.tags",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_b2ebf5c19f0ed52f97ece3d18bce4755",
+      "from_table": "main.comments",
+      "from_columns": [
+        "post_id"
+      ],
+      "to_table": "main.posts",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    }
+  ],
+  "warnings": []
+}

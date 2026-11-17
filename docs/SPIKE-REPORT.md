@@ -6,7 +6,7 @@
 ## 1. 测试环境与测试方案
 
 - **硬件 / OS**：macOS (aarch64-apple-darwin, 120Hz 显示器)
-- **构建配置**：`--release`（Desktop: `rustc 1.100.0`；WASM: `rustc 1.102.0-nightly` + `wasm-bindgen 0.2.130`，`epibrhx_app_bg.wasm` 20 MiB）
+- **构建配置**：`--release`（Desktop: `rustc 1.100.0`；WASM: `rustc 1.102.0-nightly` + `wasm-bindgen 0.2.130`，`relix_app_bg.wasm` 20 MiB）
 - **数据集**：由 `tools/schemagen` 生成的三档合成 Schema（每表 10 字段、外键密度 1.4）：
   - 100 表 / 140 关系
   - 500 表 / 701 关系

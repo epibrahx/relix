@@ -1,4 +1,4 @@
-# EPIBRHX
+# RELIX
 
 > **Read-only Database Schema Visualizer (Structural Layer MVP)** — Built with Rust + [GPUI Kit](https://gpui-kit.com) for Native Desktop and WebAssembly.
 
@@ -18,7 +18,7 @@ Input a SQLite database, PostgreSQL connection string, or `schema.sql` DDL file 
   - Renders unconfirmed inferred edges as dashed lines with full rule `evidence` on hover/selection.
   - Ambiguous multi-candidate columns are never auto-drawn; resolve them manually in the Inspector.
 - **Interactive GPU Workbench (Desktop & WASM)**:
-  - Pan, cursor-centered scroll zoom, node dragging with `epibrhx.toml` persistence, viewport culling, and 3-tier LOD (~115 FPS on 500 tables on Desktop; verified in `docs/SPIKE-REPORT.md`).
+  - Pan, cursor-centered scroll zoom, node dragging with `relix.toml` persistence, viewport culling, and 3-tier LOD (~115 FPS on 500 tables on Desktop; verified in `docs/SPIKE-REPORT.md`).
   - Table & column search with smooth camera centering + flash highlight.
   - Direct 1-hop upstream/downstream highlighting, adjustable N-hop Focus mode, automatic/manual domain groups (with collapse to group nodes), `syntect` read-only SQL DDL inspector, and system dark/light appearance sync.
 - **Exporters (CLI & UI)**:
@@ -41,28 +41,28 @@ Managed via [`mise`](https://mise.jdx.dev/) (see `mise.toml` and `rust-toolchain
 
 ```bash
 # Open built-in Blog/CMS fixture
-cargo run -p epibrhx-app
+cargo run -p relix-app
 
 # Open a SQLite file, SQL DDL file, schema JSON, or read-only Postgres URI
-cargo run -p epibrhx-app -- fixtures/01_ecommerce.db
-cargo run -p epibrhx-app -- fixtures/03_wild_legacy.sql
-cargo run -p epibrhx-app -- "postgres://readonly_user@localhost:5432/mydb"
+cargo run -p relix-app -- fixtures/01_ecommerce.db
+cargo run -p relix-app -- fixtures/03_wild_legacy.sql
+cargo run -p relix-app -- "postgres://readonly_user@localhost:5432/mydb"
 ```
 
 ### CLI Exports (Headless)
 
 ```bash
-cargo run -p epibrhx-app -- export fixtures/02_blog_cms.db --format mermaid -o schema.mmd
-cargo run -p epibrhx-app -- export fixtures/02_blog_cms.db --format md -o DICTIONARY.md
-cargo run -p epibrhx-app -- export fixtures/02_blog_cms.db --format svg -o diagram.svg
-cargo run -p epibrhx-app -- export fixtures/02_blog_cms.db --format html -o diagram.html
+cargo run -p relix-app -- export fixtures/02_blog_cms.db --format mermaid -o schema.mmd
+cargo run -p relix-app -- export fixtures/02_blog_cms.db --format md -o DICTIONARY.md
+cargo run -p relix-app -- export fixtures/02_blog_cms.db --format svg -o diagram.svg
+cargo run -p relix-app -- export fixtures/02_blog_cms.db --format html -o diagram.html
 ```
 
 ### Run WASM Web Build
 
 ```bash
-./crates/epibrhx-app/scripts/build-wasm.sh --release
-cd crates/epibrhx-app/www && bun install && bun run dev
+./crates/relix-app/scripts/build-wasm.sh --release
+cd crates/relix-app/www && bun install && bun run dev
 ```
 
 Open `http://localhost:4173` (served with required `COOP`/`COEP` headers for `wasm_thread`).
@@ -73,10 +73,10 @@ Open `http://localhost:4173` (served with required `COOP`/`COEP` headers for `wa
 
 | Crate | Purpose | WASM Compatible |
 | --- | --- | --- |
-| [`crates/epibrhx-core`](crates/epibrhx-core) | Unified `Schema` model, type normalization, deterministic inference (`C1`–`C4`), URL redaction, TOML config, exporters | Yes (`stable`) |
-| [`crates/epibrhx-layout`](crates/epibrhx-layout) | Hierarchical Sugiyama-style layout (`LayoutEngine`, cycle breaking, barycenter ordering, overlap resolution, N-hop subgraph) | Yes (`stable`) |
-| [`crates/epibrhx-sources`](crates/epibrhx-sources) | Native read-only loaders (`sqlite`, `postgres`, `sqlfile`) and `epibrhx.toml` path resolution | Native only |
-| [`crates/epibrhx-app`](crates/epibrhx-app) | GPUI Kit Dock workbench, ER canvas, CLI entrypoint, and WASM web wrapper | Desktop + WASM (`nightly`) |
+| [`crates/relix-core`](crates/relix-core) | Unified `Schema` model, type normalization, deterministic inference (`C1`–`C4`), URL redaction, TOML config, exporters | Yes (`stable`) |
+| [`crates/relix-layout`](crates/relix-layout) | Hierarchical Sugiyama-style layout (`LayoutEngine`, cycle breaking, barycenter ordering, overlap resolution, N-hop subgraph) | Yes (`stable`) |
+| [`crates/relix-sources`](crates/relix-sources) | Native read-only loaders (`sqlite`, `postgres`, `sqlfile`) and `relix.toml` path resolution | Native only |
+| [`crates/relix-app`](crates/relix-app) | GPUI Kit Dock workbench, ER canvas, CLI entrypoint, and WASM web wrapper | Desktop + WASM (`nightly`) |
 | [`tools/schemagen`](tools/schemagen) | Deterministic synthetic schema generator (`100`/`500`/`2000` scale benchmarks) | Yes |
 
 ---
@@ -85,8 +85,8 @@ Open `http://localhost:4173` (served with required `COOP`/`COEP` headers for `wa
 
 1. **No Business Data Queries**: Only system catalogs (`sqlite_master`/`PRAGMA`, `information_schema`/`pg_catalog`) or user-provided DDL/JSON are read.
 2. **Credential Redaction**: Passwords in PostgreSQL URLs/DSNs are stripped via `redact_connection_url` before entering UI labels, logs, errors, or stdout/stderr.
-3. **Credential-Free Persistence**: `epibrhx.toml` stores only structural overrides (`confirmed_relations`, `rejected_relations`, `manual_relations`, `table_groups`, `collapsed_groups`, `node_positions`, `viewport`) and is keyed for PostgreSQL by a hash of normalized `host + port + database` without username or password.
-4. **Zero Telemetry / Network Calls**: EPIBRHX performs zero analytics, update checks, or outbound network traffic beyond explicit user-initiated PostgreSQL metadata connections.
+3. **Credential-Free Persistence**: `relix.toml` stores only structural overrides (`confirmed_relations`, `rejected_relations`, `manual_relations`, `table_groups`, `collapsed_groups`, `node_positions`, `viewport`) and is keyed for PostgreSQL by a hash of normalized `host + port + database` without username or password.
+4. **Zero Telemetry / Network Calls**: RELIX performs zero analytics, update checks, or outbound network traffic beyond explicit user-initiated PostgreSQL metadata connections.
 
 ---
 
