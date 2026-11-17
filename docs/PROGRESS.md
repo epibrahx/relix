@@ -61,5 +61,12 @@
 - [x] P6-T5: CLI 命令（`epibrhx <source>`、`epibrhx export <source> --format ... -o <path>`）与 UI Export 弹窗（预览、剪贴板复制、文件保存）
 - [x] P6-T6: PNG 导出经核实 GPUI 桌面/Web 平台暂未实现 `render_to_image`，已记录于 `docs/NOTES.md`
 
-## Next
-- Phase 7 — 收尾与发布准备（P7-T1 ~ P7-T4）
+## Phase 7 — 收尾与发布准备（已完成）
+
+- [x] P7-T1: 核实 `EPIBRHX_TEST_PG_URL` 真实库回归入口；当前环境未设置该环境变量，已如实记录于 `docs/KNOWN-ISSUES.md`，SQLite / `sqlfile` / PG 脱敏与错误处理测试全部通过
+- [x] P7-T2: 编写 `README.md`（1 分钟快速上手、CLI/UI/WASM 用法、只读与隐私安全约束、架构说明）
+- [x] P7-T3: 添加发布构建脚本 `scripts/build-release.sh` 并记录跨平台桌面与 WASM 静态站点构建步骤
+- [x] P7-T4: 编写 `docs/KNOWN-ISSUES.md`（已知限制、PG 实测步骤及复用 `epibrhx-core::Schema` 的 Data/Behavior 后续路线图）
+
+## Status
+MVP 全部阶段（Phase 0 – Phase 7）实施与验收已完成。

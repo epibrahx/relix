@@ -5,6 +5,6 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
 cargo fmt --all -- --check
-cargo clippy --workspace --all-targets -- -D warnings
-cargo test --workspace
-cargo check -p epibrhx-core -p epibrhx-layout --target wasm32-unknown-unknown
+cargo clippy --workspace --all-targets "$@" -- -D warnings
+cargo test --workspace "$@"
+cargo check -p epibrhx-core -p epibrhx-layout --target wasm32-unknown-unknown "$@"
