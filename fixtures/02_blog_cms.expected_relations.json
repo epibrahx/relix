@@ -1,0 +1,44 @@
+[
+  {
+    "from_table": "main.comments",
+    "from_columns": ["author_id"],
+    "to_table": "main.authors",
+    "to_columns": ["id"]
+  },
+  {
+    "from_table": "main.comments",
+    "from_columns": ["parent_id"],
+    "to_table": "main.comments",
+    "to_columns": ["id"]
+  },
+  {
+    "from_table": "main.media_assets",
+    "from_columns": ["post_id"],
+    "to_table": "main.posts",
+    "to_columns": ["id"]
+  },
+  {
+    "from_table": "main.media_assets",
+    "from_columns": ["uploader_id"],
+    "to_table": "main.authors",
+    "to_columns": ["id"]
+  },
+  {
+    "from_table": "main.posts",
+    "from_columns": ["author_id"],
+    "to_table": "main.authors",
+    "to_columns": ["id"]
+  },
+  {
+    "from_table": "main.posts",
+    "from_columns": ["category_id"],
+    "to_table": "main.categories",
+    "to_columns": ["id"]
+  },
+  {
+    "from_table": "main.posts",
+    "from_columns": ["parent_id"],
+    "to_table": "main.posts",
+    "to_columns": ["id"]
+  }
+]

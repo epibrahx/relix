@@ -16,11 +16,18 @@
 
 ## Phase 2 — Postgres 与 SQL 文件加载器（已完成）
 
-- [x] P2-T1: `epibrhx-sources::postgres` 只读加载器（`SET default_transaction_read_only = on` + `BEGIN READ ONLY`，查询 `pg_catalog`/`information_schema`，支持多 schema 且排除系统 schema，支持 `rustls` TLS）
+- [x] P2-T1: `epibrhx-sources::postgres` 只读加载器
 - [x] P2-T2: `epibrhx-core::redact` 连接串密码脱敏与无凭据 config key 生成
-- [x] P2-T3: `epibrhx-core::sqlfile` + `epibrhx-sources::sqlfile`（`sqlparser` 解析 DDL，容错记录 `warnings`，支持 WASM 复用）
-- [x] P2-T4: `EPIBRHX_TEST_PG_URL` 环境变量控制的 Postgres 集成测试 + SQLite/sqlfile 三套 fixtures 等价性验证通过
-- [x] P2-T5: `SourceError` 友好错误文案与凭据脱敏验证
+- [x] P2-T3: `epibrhx-core::sqlfile` + `epibrhx-sources::sqlfile`
+- [x] P2-T4: `EPIBRHX_TEST_PG_URL` 集成测试与三套 fixtures SQLite/sqlfile 等价性验证
+- [x] P2-T5: 友好错误文案与凭据脱敏验证
+
+## Phase 3 — 关系推断引擎（已完成）
+
+- [x] P3-T1: `epibrhx-core::infer` 确定性规则引擎（C1–C4，无打分，歧义候选不自动画线）
+- [x] P3-T2: `epibrhx-core::morphology` 单复数（含不规则词）、驼峰/下划线及可配置表前缀处理
+- [x] P3-T3: 三套 fixtures 期望关系黄金文件与精确率/召回率回归测试（`02_blog_cms` P=1.000/R=0.857，`03_wild_legacy` P=1.000/R=0.889）
+- [x] P3-T4: `epibrhx-core::config` + `epibrhx-sources::config`（`epibrhx.toml` 读写、确认/驳回关系持久化与恢复）
 
 ## Next
-- Phase 3 — 关系推断引擎（P3-T1 ~ P3-T4）
+- Phase 4 — 图画布性能验证（决策关卡：P4-T1 ~ P4-T5）

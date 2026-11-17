@@ -1,0 +1,56 @@
+[
+  {
+    "from_table": "main.tbl_categories",
+    "from_columns": ["parent_id"],
+    "to_table": "main.tbl_categories",
+    "to_columns": ["id"]
+  },
+  {
+    "from_table": "main.tbl_customers",
+    "from_columns": ["referrer_id"],
+    "to_table": "main.tbl_customers",
+    "to_columns": ["id"]
+  },
+  {
+    "from_table": "main.tbl_invoices",
+    "from_columns": ["order_id"],
+    "to_table": "main.tbl_orders",
+    "to_columns": ["id"]
+  },
+  {
+    "from_table": "main.tbl_invoices",
+    "from_columns": ["person_uuid"],
+    "to_table": "main.tbl_people",
+    "to_columns": ["external_uuid"]
+  },
+  {
+    "from_table": "main.tbl_line_items",
+    "from_columns": ["invoice_id"],
+    "to_table": "main.tbl_invoices",
+    "to_columns": ["id"]
+  },
+  {
+    "from_table": "main.tbl_line_items",
+    "from_columns": ["product_id"],
+    "to_table": "main.tbl_products",
+    "to_columns": ["id"]
+  },
+  {
+    "from_table": "main.tbl_orders",
+    "from_columns": ["customer_id"],
+    "to_table": "main.tbl_customers",
+    "to_columns": ["id"]
+  },
+  {
+    "from_table": "main.tbl_orders",
+    "from_columns": ["personId"],
+    "to_table": "main.tbl_people",
+    "to_columns": ["id"]
+  },
+  {
+    "from_table": "main.tbl_products",
+    "from_columns": ["category_id"],
+    "to_table": "main.tbl_categories",
+    "to_columns": ["id"]
+  }
+]
