@@ -4,7 +4,9 @@ async function init() {
   try {
     const wasm = await import('./wasm/epibrhx_app.js');
     await wasm.default();
-    await wasm.run();
+    const benchParam = new URLSearchParams(window.location.search).get('bench');
+    const benchTables = benchParam ? Number.parseInt(benchParam, 10) : undefined;
+    await wasm.run(Number.isFinite(benchTables) ? benchTables : undefined);
     loadingEl?.remove();
   } catch (error) {
     console.error('Failed to initialize EPIBRHX WASM:', error);

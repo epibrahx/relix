@@ -1,18 +1,25 @@
 //! EPIBRHX desktop and WASM UI application entry points.
 
 pub mod app_view;
+pub mod canvas;
 
 #[cfg(not(target_family = "wasm"))]
-pub fn run_desktop() {
+pub fn run_desktop(bench_tables: Option<usize>, exit_on_done: bool) {
     use gpui_kit::AppContext as _;
     use gpui_kit::{WindowOptions, application, assets::Assets, init, open_window};
 
-    application().with_assets(Assets).run(|cx| {
+    let initial_tables = bench_tables.unwrap_or(100);
+    let auto_bench = bench_tables.is_some();
+
+    application().with_assets(Assets).run(move |cx| {
         init(cx);
-        open_window(WindowOptions::default(), cx, |_, cx| {
-            cx.new(|_| app_view::HelloWorld::default())
+        open_window(WindowOptions::default(), cx, move |_, cx| {
+            cx.new(|cx| {
+                app_view::EpibrhxSpikeView::new(initial_tables, auto_bench, exit_on_done, cx)
+            })
         })
         .expect("Failed to open EPIBRHX window");
+        cx.activate(true);
     });
 }
 
@@ -29,14 +36,14 @@ mod wasm_entry {
     use gpui_kit::{App, AppContext as _, Application, ApplicationHandle, WindowOptions};
     use wasm_bindgen::prelude::*;
 
-    use crate::app_view::HelloWorld;
+    use crate::app_view::EpibrhxSpikeView;
 
     thread_local! {
         static APPLICATION: RefCell<Option<ApplicationHandle>> = const { RefCell::new(None) };
     }
 
     #[wasm_bindgen]
-    pub fn run() -> Result<(), JsValue> {
+    pub fn run(bench_tables: Option<usize>) -> Result<(), JsValue> {
         console_error_panic_hook::set_once();
         let _ = console_log::init_with_level(log::Level::Info);
         tracing_wasm::set_as_global_default();
@@ -52,6 +59,9 @@ mod wasm_entry {
         let app = Application::with_platform(platform)
             .with_http_client(http_client)
             .with_assets(Assets::new(""));
+
+        let initial_tables = bench_tables.unwrap_or(100);
+        let auto_bench = bench_tables.is_some();
 
         let launch = move |cx: &mut App| {
             gpui_kit::init(cx);
@@ -70,8 +80,8 @@ mod wasm_entry {
                 theme.font_family = "Inter Variable".into();
             });
 
-            gpui_kit::open_window(WindowOptions::default(), cx, |_, cx| {
-                cx.new(|_| HelloWorld::default())
+            gpui_kit::open_window(WindowOptions::default(), cx, move |_, cx| {
+                cx.new(|cx| EpibrhxSpikeView::new(initial_tables, auto_bench, false, cx))
             })
             .expect("Failed to open WASM window");
             cx.activate(true);

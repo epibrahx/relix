@@ -12,7 +12,9 @@ anyhow.workspace = true
 epibrhx-core.workspace = true
 epibrhx-layout.workspace = true
 gpui-kit.workspace = true
+schemagen = { path = "../../tools/schemagen" }
 tracing.workspace = true
+web-time.workspace = true
 
 [target.'cfg(not(target_family = "wasm"))'.dependencies]
 epibrhx-sources.workspace = true
