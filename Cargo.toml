@@ -19,6 +19,7 @@ epibrhx-sources = { path = "crates/epibrhx-sources" }
 epibrhx-layout = { path = "crates/epibrhx-layout" }
 
 anyhow = "1"
+dirs = "6"
 insta = { version = "1", features = ["json"] }
 rusqlite = { version = "0.34", features = ["bundled"] }
 serde = { version = "1", features = ["derive"] }

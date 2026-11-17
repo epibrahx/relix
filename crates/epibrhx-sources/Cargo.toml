@@ -5,6 +5,7 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
+dirs.workspace = true
 epibrhx-core.workspace = true
 rusqlite.workspace = true
 rustls.workspace = true
@@ -17,6 +18,8 @@ tracing.workspace = true
 
 [dev-dependencies]
 insta.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 tempfile = "3"
 
 [lints]

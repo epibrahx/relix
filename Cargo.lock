@@ -1532,7 +1532,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sqlparser",
- "thiserror 2.0.21",
+ "toml 0.8.23",
 ]
 
 [[package]]
@@ -1547,11 +1547,14 @@ dependencies = [
 name = "epibrhx-sources"
 version = "0.1.0"
 dependencies = [
+ "dirs 6.0.0",
  "epibrhx-core",
  "insta",
  "rusqlite",
  "rustls",
  "rustls-native-certs",
+ "serde",
+ "serde_json",
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
