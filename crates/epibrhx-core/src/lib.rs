@@ -2,6 +2,7 @@
 //! Pure computation crate with no UI or OS I/O dependencies; compiles to `wasm32-unknown-unknown`.
 
 pub mod config;
+pub mod export;
 pub mod infer;
 pub mod model;
 pub mod morphology;
@@ -9,6 +10,7 @@ pub mod redact;
 pub mod sqlfile;
 
 pub use config::{ManualRelation, NodePosition, ProjectConfig, ViewportState};
+pub use export::{ExportNodeBox, export_html, export_markdown, export_mermaid, export_svg};
 pub use infer::{
     AmbiguousColumn, InferConfig, InferOutput, RelationCandidate, infer_relations,
     populate_inferred_relations,
