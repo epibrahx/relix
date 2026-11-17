@@ -1,12 +1,16 @@
-//! Core unified schema model, deterministic relation inference, and exporters.
+//! Core unified schema model, deterministic relation inference, SQL DDL parsing, and exporters.
 //! Pure computation crate with no UI or OS I/O dependencies; compiles to `wasm32-unknown-unknown`.
 
 pub mod model;
+pub mod redact;
+pub mod sqlfile;
 
 pub use model::{
     Column, Dialect, Index, Relation, RelationKind, RelationStatus, Schema, Table, TableKind,
     TypeFamily, normalize_type_family,
 };
+pub use redact::{postgres_config_key, redact_connection_url};
+pub use sqlfile::parse_sql_schema;
 
 pub fn core_version() -> &'static str {
     env!("CARGO_PKG_VERSION")
