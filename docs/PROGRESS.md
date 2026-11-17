@@ -52,5 +52,14 @@
 - [x] P5-T11: 数据源加载流程（CLI 自动识别、桌面本地连接/文件导入、SQL/JSON 粘贴、3 套内置 fixture 切换，密码严格脱敏）
 - [x] P5-T12: 系统浅色/深色外观同步与实时监听（`Theme::sync_system_appearance` + `observe_window_appearance`）
 
+## Phase 6 — 导出器与 CLI（已完成）
+
+- [x] P6-T1: Mermaid `erDiagram` 导出器（区分声明实线、自动推断虚线 `[inferred]`、已确认 `[confirmed]`，省略已驳回）
+- [x] P6-T2: Markdown 数据字典导出（含表概览、字段详情、索引、关系清单与警告，不含连接凭据）
+- [x] P6-T3: 独立 SVG 导出（基于布局坐标、实/虚线与颜色区分、XML 安全转义）
+- [x] P6-T4: 单文件离线交互式 HTML 导出（内嵌 SVG + 零外链 JS 缩放/平移/高亮/搜索）
+- [x] P6-T5: CLI 命令（`epibrhx <source>`、`epibrhx export <source> --format ... -o <path>`）与 UI Export 弹窗（预览、剪贴板复制、文件保存）
+- [x] P6-T6: PNG 导出经核实 GPUI 桌面/Web 平台暂未实现 `render_to_image`，已记录于 `docs/NOTES.md`
+
 ## Next
-- Phase 6 — 导出器与 CLI（P6-T1 ~ P6-T6）
+- Phase 7 — 收尾与发布准备（P7-T1 ~ P7-T4）

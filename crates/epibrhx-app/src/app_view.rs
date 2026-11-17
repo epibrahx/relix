@@ -14,6 +14,7 @@ use gpui_kit::prelude::FluentBuilder as _;
 use gpui_kit::*;
 
 use crate::canvas::ErCanvasView;
+use crate::exporter::{ExportFormat, render_export};
 use crate::panels::canvas_panel::ErCanvasPanel;
 use crate::panels::inspector::InspectorPanel;
 use crate::panels::sidebar::NavigationPanel;
@@ -31,6 +32,11 @@ pub struct EpibrhxApp {
     import_target_input: Entity<InputState>,
     import_sql_editor: Entity<EditorState>,
     import_error: Option<String>,
+    show_export_modal: bool,
+    export_format: ExportFormat,
+    export_path_input: Entity<InputState>,
+    export_preview_editor: Entity<EditorState>,
+    export_status: Option<String>,
     _subs: Vec<Subscription>,
 }
 
@@ -109,6 +115,17 @@ impl EpibrhxApp {
             );
         });
 
+        let export_path_input = cx.new(|cx| {
+            let mut st = InputState::new(window, cx).placeholder("Output path, e.g. ./schema.mmd");
+            st.set_value("epibrhx-export.mmd", window, cx);
+            st
+        });
+        let export_preview_editor = cx.new(|cx| {
+            EditorState::new(window, cx)
+                .language("markdown")
+                .line_number(true)
+        });
+
         let app_sub = cx.observe(&app, |_, _, cx| cx.notify());
         let canvas_sub = cx.observe(&canvas, |_, _, cx| cx.notify());
 
@@ -121,6 +138,11 @@ impl EpibrhxApp {
             import_target_input,
             import_sql_editor,
             import_error: None,
+            show_export_modal: false,
+            export_format: ExportFormat::Mermaid,
+            export_path_input,
+            export_preview_editor,
+            export_status: None,
             _subs: vec![appearance_sub, app_sub, canvas_sub],
         }
     }
@@ -179,6 +201,69 @@ impl EpibrhxApp {
             return;
         }
         self.apply_loaded_source(SourceSpec::NativeInput(target), cx);
+    }
+
+    fn refresh_export_preview(
+        &mut self,
+        format: ExportFormat,
+        window: &mut Window,
+        cx: &mut Context<Self>,
+    ) {
+        self.export_format = format;
+        self.export_path_input.update(cx, |inp, cx| {
+            inp.set_value(format!("epibrhx-export.{}", format.extension()), window, cx);
+        });
+        let content = {
+            let st = self.app.read(cx);
+            render_export(&st.schema, &st.config, format).unwrap_or_else(|e| format!("Error: {e}"))
+        };
+        let preview = if content.len() > 48_000 {
+            format!(
+                "{}\n\n<!-- Preview truncated at 48KB (full output used on Copy / Save) -->",
+                &content[..48_000]
+            )
+        } else {
+            content
+        };
+        self.export_preview_editor.update(cx, |ed, cx| {
+            ed.set_value(preview, window, cx);
+        });
+        self.export_status = None;
+        cx.notify();
+    }
+
+    fn copy_export_to_clipboard(&mut self, cx: &mut Context<Self>) {
+        let st = self.app.read(cx);
+        match render_export(&st.schema, &st.config, self.export_format) {
+            Ok(full) => {
+                cx.write_to_clipboard(ClipboardItem::new_string(full));
+                self.export_status = Some(format!(
+                    "Copied {} to clipboard.",
+                    self.export_format.label()
+                ));
+            }
+            Err(err) => self.export_status = Some(format!("Export failed: {err}")),
+        }
+        cx.notify();
+    }
+
+    #[cfg(not(target_family = "wasm"))]
+    fn save_export_to_file(&mut self, cx: &mut Context<Self>) {
+        let path_str = self.export_path_input.read(cx).value().trim().to_string();
+        if path_str.is_empty() {
+            self.export_status = Some("Enter a target output file path.".to_string());
+            cx.notify();
+            return;
+        }
+        let st = self.app.read(cx);
+        match render_export(&st.schema, &st.config, self.export_format) {
+            Ok(full) => match std::fs::write(&path_str, full) {
+                Ok(()) => self.export_status = Some(format!("Saved to {path_str}")),
+                Err(err) => self.export_status = Some(format!("Write failed: {err}")),
+            },
+            Err(err) => self.export_status = Some(format!("Export failed: {err}")),
+        }
+        cx.notify();
     }
 }
 
@@ -258,11 +343,23 @@ impl Render for EpibrhxApp {
                                     .primary()
                                     .label("Open / Import")
                                     .on_click(cx.listener(|this, _, _, cx| {
+                                        this.show_export_modal = false;
                                         this.show_import_modal = !this.show_import_modal;
                                         this.import_error = None;
                                         cx.notify();
                                     })),
-                            ),
+                            )
+                            .child(Button::new("btn-export").xsmall().label("Export").on_click(
+                                cx.listener(|this, _, window, cx| {
+                                    this.show_import_modal = false;
+                                    this.show_export_modal = !this.show_export_modal;
+                                    if this.show_export_modal {
+                                        this.refresh_export_preview(this.export_format, window, cx);
+                                    } else {
+                                        cx.notify();
+                                    }
+                                }),
+                            )),
                     )
                     // Right section: layout, focus mode, auto-group, fit, inspector toggle
                     .child(
@@ -538,6 +635,118 @@ impl Render for EpibrhxApp {
                                             .text_xs()
                                             .text_color(theme.danger)
                                             .child(err),
+                                    )
+                                }),
+                        ),
+                )
+            })
+            // Export Modal Overlay (P6-T1..P6-T4)
+            .when(self.show_export_modal, |root| {
+                let selected_fmt = self.export_format;
+                root.child(
+                    div()
+                        .id("export-modal-backdrop")
+                        .absolute()
+                        .inset_0()
+                        .bg(gpui::black().alpha(0.45))
+                        .flex()
+                        .items_center()
+                        .justify_center()
+                        .on_mouse_down(MouseButton::Left, |_, _, cx| cx.stop_propagation())
+                        .child(
+                            div()
+                                .w(px(680.0))
+                                .max_h(px(580.0))
+                                .p_4()
+                                .rounded(px(10.0))
+                                .bg(theme.popover)
+                                .border_1()
+                                .border_color(theme.border)
+                                .flex()
+                                .flex_col()
+                                .gap_3()
+                                .child(
+                                    div()
+                                        .flex()
+                                        .flex_row()
+                                        .items_center()
+                                        .justify_between()
+                                        .child(
+                                            div()
+                                                .text_base()
+                                                .font_semibold()
+                                                .child("Export Schema"),
+                                        )
+                                        .child(
+                                            Button::new("exp-modal-close")
+                                                .xsmall()
+                                                .ghost()
+                                                .label("Close")
+                                                .on_click(cx.listener(|this, _, _, cx| {
+                                                    this.show_export_modal = false;
+                                                    cx.notify();
+                                                })),
+                                        ),
+                                )
+                                .child(div().flex().flex_row().items_center().gap_1p5().children(
+                                    ExportFormat::ALL.into_iter().map(|fmt| {
+                                        Button::new(format!("exp-fmt-{}", fmt.label()))
+                                            .xsmall()
+                                            .when(selected_fmt == fmt, |b| b.primary())
+                                            .label(fmt.label())
+                                            .on_click(cx.listener(move |this, _, window, cx| {
+                                                this.refresh_export_preview(fmt, window, cx);
+                                            }))
+                                    }),
+                                ))
+                                .child(
+                                    div().h(px(320.0)).child(
+                                        Editor::new(&self.export_preview_editor).readonly(true),
+                                    ),
+                                )
+                                .child(
+                                    div()
+                                        .flex()
+                                        .flex_row()
+                                        .items_center()
+                                        .justify_between()
+                                        .gap_2()
+                                        .when(cfg!(not(target_family = "wasm")), |row| {
+                                            row.child(
+                                                div().flex_1().child(
+                                                    Input::new(&self.export_path_input).small(),
+                                                ),
+                                            )
+                                            .child(
+                                                Button::new("exp-save-file")
+                                                    .small()
+                                                    .label("Save File")
+                                                    .on_click(cx.listener(|this, _, _, cx| {
+                                                        #[cfg(not(target_family = "wasm"))]
+                                                        this.save_export_to_file(cx);
+                                                        #[cfg(target_family = "wasm")]
+                                                        let _ = (this, cx);
+                                                    })),
+                                            )
+                                        })
+                                        .child(
+                                            Button::new("exp-copy-clip")
+                                                .small()
+                                                .primary()
+                                                .label("Copy to Clipboard")
+                                                .on_click(cx.listener(|this, _, _, cx| {
+                                                    this.copy_export_to_clipboard(cx);
+                                                })),
+                                        ),
+                                )
+                                .when_some(self.export_status.clone(), |modal, msg| {
+                                    modal.child(
+                                        div()
+                                            .p_2()
+                                            .rounded(px(6.0))
+                                            .bg(theme.secondary)
+                                            .text_xs()
+                                            .child(msg),
                                     )
                                 }),
                         ),

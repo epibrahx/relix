@@ -24,3 +24,6 @@
 - WASM fonts:
   - GPUI Web has no system font database and requires `IBM Plex Sans` (for `.SystemUIFont`) and UI fonts registered via `cx.text_system().add_fonts(...)` before opening the window.
   - Bundled in `crates/epibrhx-app/fonts/`: `IBMPlexSans-Regular.ttf`, `Inter-Regular.ttf`.
+
+## Exporter Notes
+- `P6-T6` (PNG export): GPUI desktop/web window platforms currently return `render_to_image not implemented for this platform`. Rather than introducing a direct `resvg` dependency inside `epibrhx-core` (keeping the core/WASM bundle minimal), PNG rasterization is deferred post-MVP; SVG, self-contained interactive HTML, Mermaid `erDiagram`, Markdown data dictionary, and JSON are supported cleanly.

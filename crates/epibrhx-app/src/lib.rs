@@ -2,6 +2,7 @@
 
 pub mod app_view;
 pub mod canvas;
+pub mod exporter;
 pub mod panels;
 pub mod source_loader;
 pub mod state;
