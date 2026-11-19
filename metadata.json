@@ -1,5 +1,0 @@
-{
-  "name": "RELIX",
-  "description": "Read-only database & GraphQL schema visualizer displaying declared foreign keys and manual relations, with Saleor & Shopify connectors, obstacle-avoiding orthogonal ER layout, domain grouping, and offline exports.",
-  "requestFramePermissions": []
-}

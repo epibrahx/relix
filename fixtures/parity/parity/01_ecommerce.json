@@ -1,0 +1,600 @@
+{
+  "dialect": "sqlfile",
+  "tables": [
+    {
+      "id": "main.active_orders_view",
+      "schema": "main",
+      "name": "active_orders_view",
+      "kind": "view",
+      "comment": null,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "user_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "status",
+          "data_type": "VARCHAR(32)",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "total_amount",
+          "data_type": "NUMERIC(12, 2)",
+          "type_family": "numeric",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "main.categories",
+      "schema": "main",
+      "name": "categories",
+      "kind": "table",
+      "comment": null,
+      "is_partition": false,
+      "partition_of": null,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "parent_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "slug",
+          "data_type": "VARCHAR(128)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "data_type": "VARCHAR(128)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "slug"
+        ]
+      ],
+      "indexes": [
+        {
+          "name": "idx_categories_parent",
+          "columns": [
+            "parent_id"
+          ],
+          "unique": false
+        }
+      ]
+    },
+    {
+      "id": "main.member_audits",
+      "schema": "main",
+      "name": "member_audits",
+      "kind": "table",
+      "comment": null,
+      "is_partition": false,
+      "partition_of": null,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "tenant_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "user_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "action",
+          "data_type": "VARCHAR(64)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "created_at",
+          "data_type": "TIMESTAMP",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "main.order_items",
+      "schema": "main",
+      "name": "order_items",
+      "kind": "table",
+      "comment": null,
+      "is_partition": false,
+      "partition_of": null,
+      "columns": [
+        {
+          "name": "order_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "product_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "quantity",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "unit_price",
+          "data_type": "NUMERIC(10, 2)",
+          "type_family": "numeric",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "order_id",
+        "product_id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "main.orders",
+      "schema": "main",
+      "name": "orders",
+      "kind": "table",
+      "comment": null,
+      "is_partition": false,
+      "partition_of": null,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "user_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "status",
+          "data_type": "VARCHAR(32)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "total_amount",
+          "data_type": "NUMERIC(12, 2)",
+          "type_family": "numeric",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "created_at",
+          "data_type": "TIMESTAMP",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": [
+        {
+          "name": "idx_orders_user_status",
+          "columns": [
+            "user_id",
+            "status"
+          ],
+          "unique": false
+        }
+      ]
+    },
+    {
+      "id": "main.products",
+      "schema": "main",
+      "name": "products",
+      "kind": "table",
+      "comment": null,
+      "is_partition": false,
+      "partition_of": null,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "category_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "sku",
+          "data_type": "VARCHAR(64)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "data_type": "VARCHAR(255)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "price",
+          "data_type": "NUMERIC(10, 2)",
+          "type_family": "numeric",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "metadata",
+          "data_type": "JSON",
+          "type_family": "json",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "sku"
+        ]
+      ],
+      "indexes": [
+        {
+          "name": "idx_products_category",
+          "columns": [
+            "category_id"
+          ],
+          "unique": false
+        }
+      ]
+    },
+    {
+      "id": "main.raw_events",
+      "schema": "main",
+      "name": "raw_events",
+      "kind": "table",
+      "comment": null,
+      "is_partition": false,
+      "partition_of": null,
+      "columns": [
+        {
+          "name": "event_type",
+          "data_type": "VARCHAR(64)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "payload",
+          "data_type": "TEXT",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "occurred_at",
+          "data_type": "TIMESTAMP",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "main.tenant_members",
+      "schema": "main",
+      "name": "tenant_members",
+      "kind": "table",
+      "comment": null,
+      "is_partition": false,
+      "partition_of": null,
+      "columns": [
+        {
+          "name": "tenant_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "user_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "role",
+          "data_type": "VARCHAR(32)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "tenant_id",
+        "user_id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "main.users",
+      "schema": "main",
+      "name": "users",
+      "kind": "table",
+      "comment": null,
+      "is_partition": false,
+      "partition_of": null,
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "email",
+          "data_type": "VARCHAR(255)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "username",
+          "data_type": "VARCHAR(64)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "is_active",
+          "data_type": "BOOLEAN",
+          "type_family": "bool",
+          "nullable": false,
+          "default": "true",
+          "comment": null
+        },
+        {
+          "name": "created_at",
+          "data_type": "TIMESTAMP",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "email"
+        ],
+        [
+          "username"
+        ]
+      ],
+      "indexes": []
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel_260fee76c0475399874c4f2d44772439",
+      "from_table": "main.order_items",
+      "from_columns": [
+        "product_id"
+      ],
+      "to_table": "main.products",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_4b94f3e8eae27c4f8ad755a340f15645",
+      "from_table": "main.products",
+      "from_columns": [
+        "category_id"
+      ],
+      "to_table": "main.categories",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_a188563856380f1ecbdbc7e41431514b",
+      "from_table": "main.order_items",
+      "from_columns": [
+        "order_id"
+      ],
+      "to_table": "main.orders",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_bcab3f6c7bc8d9c1030d1ef1bad310b6",
+      "from_table": "main.orders",
+      "from_columns": [
+        "user_id"
+      ],
+      "to_table": "main.users",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_ca8011306703133e2701bca3398a4d8d",
+      "from_table": "main.tenant_members",
+      "from_columns": [
+        "user_id"
+      ],
+      "to_table": "main.users",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_f6f65990332c167a239f141619351531",
+      "from_table": "main.categories",
+      "from_columns": [
+        "parent_id"
+      ],
+      "to_table": "main.categories",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_f7445ecdbbe005190a81e415db453b73",
+      "from_table": "main.member_audits",
+      "from_columns": [
+        "tenant_id",
+        "user_id"
+      ],
+      "to_table": "main.tenant_members",
+      "to_columns": [
+        "tenant_id",
+        "user_id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    }
+  ],
+  "warnings": []
+}

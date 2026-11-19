@@ -1,0 +1,204 @@
+erDiagram
+    %% 商品集合（手动集合或智能规则集合）
+    Collection {
+        ID! id PK "NOT NULL"
+        String! handle UK "NOT NULL"
+        String! title "NOT NULL"
+        String description
+        [Product] products FK "NOT NULL; 集合内商品（Connection 折叠为 1:N 关系）"
+        DateTime! updatedAt "NOT NULL"
+    }
+    %% 客户档案（Customer）
+    Customer {
+        ID! id PK "NOT NULL"
+        String email UK
+        String firstName
+        String lastName
+        String phone
+        UnsignedInt64! numberOfOrders "NOT NULL; 历史订单总数"
+        MailingAddress defaultAddress FK "默认收货地址"
+        [MailingAddress!]! addresses FK "NOT NULL; 客户地址簿"
+        [Order] orders FK "NOT NULL; 客户历史订单（Connection 折叠为 1:N 关系）"
+        DateTime! createdAt "NOT NULL"
+    }
+    %% 促销折扣节点（DiscountNode）
+    DiscountNode {
+        ID! id PK "NOT NULL"
+        String! title "NOT NULL"
+        String code
+        String! status "NOT NULL"
+        DateTime! startsAt "NOT NULL"
+        DateTime endsAt
+    }
+    %% 草稿订单（DraftOrder）：用于 B2B 报价单或客服代下单
+    DraftOrder {
+        ID! id PK "NOT NULL"
+        String! name "NOT NULL"
+        String! status "NOT NULL"
+        Customer customer FK "关联客户"
+        Order order FK "转化生成的正式订单"
+        [LineItem] lineItems FK "NOT NULL; 草稿商品行（Connection 折叠为 1:N 关系）"
+        MailingAddress shippingAddress FK "收货地址"
+        DateTime! createdAt "NOT NULL"
+    }
+    %% 发货单（Fulfillment）：记录承运商、运单号与发货状态
+    Fulfillment {
+        ID! id PK "NOT NULL"
+        String! status "NOT NULL"
+        String trackingCompany
+        String trackingNumber
+        Order! order FK "NOT NULL; 所属订单"
+        Location location FK "出库仓库"
+        DateTime! createdAt "NOT NULL"
+    }
+    %% 履约指令单（FulfillmentOrder）：分配给具体仓库执行的发货任务
+    FulfillmentOrder {
+        ID! id PK "NOT NULL"
+        FulfillmentOrderStatus! status "NOT NULL; 枚举值：OPEN, IN_PROGRESS, SCHEDULED, ON_HOLD, CLOSED, CANCELLED"
+        Order! order FK "NOT NULL; 所属订单"
+        Location! assignedLocation FK "NOT NULL; 指派履约仓库"
+        [Fulfillment] fulfillments FK "NOT NULL; 关联发货单（Connection 折叠为 1:N 关系）"
+        DateTime fulfillAt
+    }
+    %% 库存条目（InventoryItem）：跨多仓位跟踪 SKU 成本与库存
+    InventoryItem {
+        ID! id PK "NOT NULL"
+        String sku UK
+        Boolean! tracked "NOT NULL; 是否跟踪库存"
+        Boolean! requiresShipping "NOT NULL; 是否需要物流配送"
+        Decimal unitCostAmount "采购单位成本"
+        ProductVariant variant FK "所属变体"
+        [InventoryLevel] inventoryLevels FK "NOT NULL; 各仓库/门店的库存水位（Connection 折叠为 1:N 关系）"
+        DateTime! updatedAt "NOT NULL"
+    }
+    %% 库位库存水位（InventoryLevel）：记录特定仓库下某 SKU 的可用量
+    InventoryLevel {
+        ID! id PK "NOT NULL"
+        Int! available "NOT NULL; 可用库存数量"
+        Int! incoming "NOT NULL; 在途补货数量"
+        InventoryItem! item FK "NOT NULL; 所属库存条目"
+        Location! location FK "NOT NULL; 所在仓库/门店位置"
+        DateTime! updatedAt "NOT NULL"
+    }
+    %% 订单商品明细行（LineItem）
+    LineItem {
+        ID! id PK "NOT NULL"
+        String! title "NOT NULL"
+        String sku UK
+        Int! quantity "NOT NULL"
+        Decimal! originalUnitPriceAmount "NOT NULL"
+        Product product FK "关联商品"
+        ProductVariant variant FK "关联变体"
+    }
+    %% 仓库与线下门店位置（Location）
+    Location {
+        ID! id PK "NOT NULL"
+        String! name "NOT NULL"
+        Boolean! isActive "NOT NULL"
+        Boolean! fulfillsOnlineOrders "NOT NULL"
+        MailingAddress! address FK "NOT NULL; 仓库物理地址"
+        [InventoryLevel] inventoryLevels FK "NOT NULL; 该位置的全部库存水位（Connection 折叠为 1:N 关系）"
+    }
+    %% 邮寄地址（MailingAddress）
+    MailingAddress {
+        ID! id PK "NOT NULL"
+        String address1
+        String city
+        String province
+        String country
+        String zip
+        String phone
+    }
+    %% 跨境市场（Market）：管理区域币种与定价目录
+    Market {
+        ID! id PK "NOT NULL"
+        String! name "NOT NULL"
+        String! handle UK "NOT NULL"
+        Boolean! enabled "NOT NULL"
+        Boolean! primary "NOT NULL"
+    }
+    %% 商品媒体资源（图片 / 3D 模型 / 视频）
+    Media {
+        ID! id PK "NOT NULL"
+        String alt
+        String! mediaContentType "NOT NULL"
+        URL previewUrl
+    }
+    %% Shopify 订单（Order）：连接买家、订单行、履约单与发货记录
+    Order {
+        ID! id PK "NOT NULL"
+        String! name "NOT NULL; 订单展示号（如 #1001）"
+        String email UK
+        OrderDisplayFinancialStatus displayFinancialStatus "财务支付状态 · 枚举值：PENDING, AUTHORIZED, PARTIALLY_PAID, PAID, PARTIALLY_REFUNDED, REFUNDED…"
+        OrderDisplayFulfillmentStatus! displayFulfillmentStatus "NOT NULL; 履约发货状态 · 枚举值：UNFULFILLED, PARTIALLY_FULFILLED, FULFILLED, ON_HOLD, SCHEDULED"
+        Decimal! totalPriceAmount "NOT NULL; 订单实付总金额"
+        String! currencyCode "NOT NULL; 币种代码"
+        Customer customer FK "下单客户"
+        MailingAddress shippingAddress FK "收货地址"
+        MailingAddress billingAddress FK "账单地址"
+        [LineItem] lineItems FK "NOT NULL; 订单商品明细行（Connection 折叠为 1:N 关系）"
+        [FulfillmentOrder] fulfillmentOrders FK "NOT NULL; 履约指令单（Connection 折叠为 1:N 关系）"
+        [Fulfillment!]! fulfillments FK "NOT NULL; 已生成的发货单"
+        DiscountNode discountNode FK "使用的促销折扣"
+        DateTime! createdAt "NOT NULL"
+    }
+    %% Shopify 商品主实体（Product）：包含标题、Handle、状态、变体与媒体资源
+    Product {
+        ID! id PK "NOT NULL; Shopify GID（gid://shopify/Product/...）"
+        String! handle UK "NOT NULL; 商品 URL Handle"
+        String! title "NOT NULL; 商品标题"
+        String! vendor "NOT NULL; 品牌/供应商"
+        String! productType "NOT NULL; 商品分类标签"
+        ProductStatus! status "NOT NULL; 上架状态（ACTIVE / DRAFT / ARCHIVED） · 枚举值：ACTIVE, ARCHIVED, DRAFT"
+        [ProductVariant] variants FK "NOT NULL; SKU 变体分页集合（Connection 折叠为 1:N 关系）"
+        [Collection] collections FK "NOT NULL; 所属集合（Connection 折叠为 1:N 关系）"
+        [Media] media FK "NOT NULL; 关联图片与视频媒体（Connection 折叠为 1:N 关系）"
+        DateTime! createdAt "NOT NULL"
+        DateTime! updatedAt "NOT NULL"
+    }
+    %% Shopify 商品变体（SKU）：挂接商品与库存条目
+    ProductVariant {
+        ID! id PK "NOT NULL"
+        String! title "NOT NULL"
+        String sku UK "SKU 货号"
+        String barcode "条形码"
+        Decimal! price "NOT NULL; 销售单价"
+        Decimal compareAtPrice "划线原价"
+        Int inventoryQuantity "可售库存总数"
+        Product! product FK "NOT NULL; 所属商品"
+        InventoryItem! inventoryItem FK "NOT NULL; 对应的库存管理条目"
+        DateTime! createdAt "NOT NULL"
+    }
+    Order ||--o{ FulfillmentOrder : "order [declared]"
+    InventoryLevel ||--o{ Location : "inventoryLevels [declared]"
+    MailingAddress ||--o{ Order : "billingAddress [declared]"
+    DiscountNode ||--o{ Order : "discountNode [declared]"
+    MailingAddress ||--o{ Customer : "addresses [declared]"
+    Location ||--o{ Fulfillment : "location [declared]"
+    LineItem ||--o{ DraftOrder : "lineItems [declared]"
+    ProductVariant ||--o{ InventoryItem : "variant [declared]"
+    Fulfillment ||--o{ Order : "fulfillments [declared]"
+    Fulfillment ||--o{ FulfillmentOrder : "fulfillments [declared]"
+    InventoryItem ||--o{ ProductVariant : "inventoryItem [declared]"
+    MailingAddress ||--o{ DraftOrder : "shippingAddress [declared]"
+    Customer ||--o{ Order : "customer [declared]"
+    Location ||--o{ FulfillmentOrder : "assignedLocation [declared]"
+    Order ||--o{ Fulfillment : "order [declared]"
+    FulfillmentOrder ||--o{ Order : "fulfillmentOrders [declared]"
+    LineItem ||--o{ Order : "lineItems [declared]"
+    ProductVariant ||--o{ Product : "variants [declared]"
+    Customer ||--o{ DraftOrder : "customer [declared]"
+    ProductVariant ||--o{ LineItem : "variant [declared]"
+    InventoryLevel ||--o{ InventoryItem : "inventoryLevels [declared]"
+    Product ||--o{ LineItem : "product [declared]"
+    Order ||--o{ DraftOrder : "order [declared]"
+    InventoryItem ||--o{ InventoryLevel : "item [declared]"
+    Media ||--o{ Product : "media [declared]"
+    MailingAddress ||--o{ Customer : "defaultAddress [declared]"
+    MailingAddress ||--o{ Location : "address [declared]"
+    Collection ||--o{ Product : "collections [declared]"
+    Order ||--o{ Customer : "orders [declared]"
+    Product ||--o{ ProductVariant : "product [declared]"
+    Location ||--o{ InventoryLevel : "location [declared]"
+    MailingAddress ||--o{ Order : "shippingAddress [declared]"
+    Product ||--o{ Collection : "products [declared]"

@@ -1,0 +1,2006 @@
+{
+  "dialect": "graphql",
+  "tables": [
+    {
+      "id": "saleor.Address",
+      "schema": "saleor",
+      "name": "Address",
+      "kind": "table",
+      "comment": "地址实体：被用户、订单、结算单与仓库复用",
+      "domain": "customers",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "firstName",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "lastName",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "streetAddress1",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "city",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "postalCode",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "country",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "phone",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "saleor.Allocation",
+      "schema": "saleor",
+      "name": "Allocation",
+      "kind": "table",
+      "comment": "订单库存锁定记录",
+      "domain": "inventory",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "stock",
+          "data_type": "Stock!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "锁定的库存记录"
+        },
+        {
+          "name": "quantity",
+          "data_type": "Int!",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": "锁定数量"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "saleor.Category",
+      "schema": "saleor",
+      "name": "Category",
+      "kind": "table",
+      "comment": "商品类目树：支持多级父子类目",
+      "domain": "catalog",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "slug",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "level",
+          "data_type": "Int!",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "parent",
+          "data_type": "Category",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "上级类目"
+        },
+        {
+          "name": "children",
+          "data_type": "[Category]",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "下级子类目（Connection 折叠为 1:N 关系）"
+        },
+        {
+          "name": "products",
+          "data_type": "[Product]",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "类目下的商品（Connection 折叠为 1:N 关系）"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "slug"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "saleor.Channel",
+      "schema": "saleor",
+      "name": "Channel",
+      "kind": "table",
+      "comment": "销售渠道：按国家、币种隔离定价与库存",
+      "domain": "channels",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "slug",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "isActive",
+          "data_type": "Boolean!",
+          "type_family": "bool",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "currencyCode",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "默认币种代码（如 USD / CNY）"
+        },
+        {
+          "name": "warehouses",
+          "data_type": "[Warehouse!]!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "关联的履约仓库"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "slug"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "saleor.Checkout",
+      "schema": "saleor",
+      "name": "Checkout",
+      "kind": "table",
+      "comment": "结算单（购物车）：下单前的商品与运费暂存状态",
+      "domain": "orders",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "token",
+          "data_type": "UUID!",
+          "type_family": "uuid",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "email",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "channel",
+          "data_type": "Channel!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "所属销售渠道"
+        },
+        {
+          "name": "user",
+          "data_type": "User",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "关联下单用户"
+        },
+        {
+          "name": "shippingAddress",
+          "data_type": "Address",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "收货地址"
+        },
+        {
+          "name": "billingAddress",
+          "data_type": "Address",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "账单地址"
+        },
+        {
+          "name": "lines",
+          "data_type": "[CheckoutLine!]!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "购物车明细行"
+        },
+        {
+          "name": "created",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "updatedAt",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "email"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "saleor.CheckoutLine",
+      "schema": "saleor",
+      "name": "CheckoutLine",
+      "kind": "table",
+      "comment": "结算单明细行",
+      "domain": "orders",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "variant",
+          "data_type": "ProductVariant!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "quantity",
+          "data_type": "Int!",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "totalPriceAmount",
+          "data_type": "Decimal!",
+          "type_family": "numeric",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "saleor.Collection",
+      "schema": "saleor",
+      "name": "Collection",
+      "kind": "table",
+      "comment": "营销商品集合",
+      "domain": "catalog",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "slug",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "products",
+          "data_type": "[Product]",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "集合内商品（Connection 折叠为 1:N 关系）"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "slug"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "saleor.Fulfillment",
+      "schema": "saleor",
+      "name": "Fulfillment",
+      "kind": "table",
+      "comment": "订单履约发货单",
+      "domain": "inventory",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "fulfillmentOrder",
+          "data_type": "Int!",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "status",
+          "data_type": "FulfillmentStatus!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "枚举值：FULFILLED, REFUNDED, RETURNED, CANCELED, WAITING_FOR_APPROVAL"
+        },
+        {
+          "name": "trackingNumber",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "warehouse",
+          "data_type": "Warehouse",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "出库仓库"
+        },
+        {
+          "name": "created",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "saleor.Order",
+      "schema": "saleor",
+      "name": "Order",
+      "kind": "table",
+      "comment": "销售订单：聚合买家、渠道、履约与支付交易",
+      "domain": "orders",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "number",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "订单展示编号"
+        },
+        {
+          "name": "status",
+          "data_type": "OrderStatus!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "订单状态 · 枚举值：DRAFT, UNCONFIRMED, UNFULFILLED, PARTIALLY_FULFILLED, FULFILLED, CANCELED"
+        },
+        {
+          "name": "paymentStatus",
+          "data_type": "PaymentChargeStatusEnum!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "支付状态 · 枚举值：NOT_CHARGED, PENDING, PARTIALLY_CHARGED, FULLY_CHARGED, PARTIALLY_REFUNDED, FULLY_REFUNDED"
+        },
+        {
+          "name": "channel",
+          "data_type": "Channel!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "所属销售渠道"
+        },
+        {
+          "name": "user",
+          "data_type": "User",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "下单客户"
+        },
+        {
+          "name": "shippingAddress",
+          "data_type": "Address",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "收货地址"
+        },
+        {
+          "name": "billingAddress",
+          "data_type": "Address",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "账单地址"
+        },
+        {
+          "name": "lines",
+          "data_type": "[OrderLine!]!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "订单商品明细"
+        },
+        {
+          "name": "fulfillments",
+          "data_type": "[Fulfillment!]!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "履约发货单"
+        },
+        {
+          "name": "transactions",
+          "data_type": "[TransactionItem!]!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "支付交易记录"
+        },
+        {
+          "name": "totalAmount",
+          "data_type": "Decimal!",
+          "type_family": "numeric",
+          "nullable": false,
+          "default": null,
+          "comment": "订单应付总额"
+        },
+        {
+          "name": "created",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "saleor.OrderLine",
+      "schema": "saleor",
+      "name": "OrderLine",
+      "kind": "table",
+      "comment": "订单商品明细行",
+      "domain": "orders",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "productName",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "variantName",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "quantity",
+          "data_type": "Int!",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "unitPriceAmount",
+          "data_type": "Decimal!",
+          "type_family": "numeric",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "variant",
+          "data_type": "ProductVariant",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "关联的商品变体"
+        },
+        {
+          "name": "allocations",
+          "data_type": "[Allocation!]",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "库存锁定记录"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "saleor.Product",
+      "schema": "saleor",
+      "name": "Product",
+      "kind": "table",
+      "comment": "商品主表（SPU）：定义商品名称、类目、商品类型与多渠道上架信息",
+      "domain": "catalog",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "全局唯一 ID"
+        },
+        {
+          "name": "slug",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "商品 URL Slug"
+        },
+        {
+          "name": "name",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "商品名称"
+        },
+        {
+          "name": "description",
+          "data_type": "JSONString",
+          "type_family": "json",
+          "nullable": true,
+          "default": null,
+          "comment": "富文本描述（EditorJS JSON）"
+        },
+        {
+          "name": "productType",
+          "data_type": "ProductType!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "所属商品类型"
+        },
+        {
+          "name": "category",
+          "data_type": "Category",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "所属商品类目"
+        },
+        {
+          "name": "defaultVariant",
+          "data_type": "ProductVariant",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "默认 SKU 变体"
+        },
+        {
+          "name": "variants",
+          "data_type": "[ProductVariant!]",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "下属 SKU 变体列表"
+        },
+        {
+          "name": "collections",
+          "data_type": "[Collection!]",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "所属营销集合"
+        },
+        {
+          "name": "channelListings",
+          "data_type": "[ProductChannelListing!]",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "渠道定价与上架配置"
+        },
+        {
+          "name": "isAvailableForPurchase",
+          "data_type": "Boolean",
+          "type_family": "bool",
+          "nullable": true,
+          "default": null,
+          "comment": "是否可销售"
+        },
+        {
+          "name": "updatedAt",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": "最后更新时间"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "slug"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "saleor.ProductChannelListing",
+      "schema": "saleor",
+      "name": "ProductChannelListing",
+      "kind": "table",
+      "comment": "商品渠道上架与可见性配置",
+      "domain": "channels",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "channel",
+          "data_type": "Channel!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "isPublished",
+          "data_type": "Boolean!",
+          "type_family": "bool",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "visibleInListings",
+          "data_type": "Boolean!",
+          "type_family": "bool",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "availableForPurchaseAt",
+          "data_type": "DateTime",
+          "type_family": "timestamp",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "saleor.ProductType",
+      "schema": "saleor",
+      "name": "ProductType",
+      "kind": "table",
+      "comment": "商品类型：决定商品及变体的属性模板与物流属性",
+      "domain": "catalog",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "slug",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "isShippingRequired",
+          "data_type": "Boolean!",
+          "type_family": "bool",
+          "nullable": false,
+          "default": null,
+          "comment": "是否需要物流配送"
+        },
+        {
+          "name": "isDigital",
+          "data_type": "Boolean!",
+          "type_family": "bool",
+          "nullable": false,
+          "default": null,
+          "comment": "是否为数字商品"
+        },
+        {
+          "name": "products",
+          "data_type": "[Product]",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "该类型下的商品（Connection 折叠为 1:N 关系）"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "slug"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "saleor.ProductVariant",
+      "schema": "saleor",
+      "name": "ProductVariant",
+      "kind": "table",
+      "comment": "商品变体（SKU）：定义货号、库存与渠道价格",
+      "domain": "catalog",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "sku",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": "SKU 编码"
+        },
+        {
+          "name": "name",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "变体名称"
+        },
+        {
+          "name": "product",
+          "data_type": "Product!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "所属商品 SPU"
+        },
+        {
+          "name": "trackInventory",
+          "data_type": "Boolean!",
+          "type_family": "bool",
+          "nullable": false,
+          "default": null,
+          "comment": "是否跟踪库存"
+        },
+        {
+          "name": "stocks",
+          "data_type": "[Stock!]",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "各仓库库存记录"
+        },
+        {
+          "name": "channelListings",
+          "data_type": "[ProductVariantChannelListing!]",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "渠道售价配置"
+        },
+        {
+          "name": "updatedAt",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "sku"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "saleor.ProductVariantChannelListing",
+      "schema": "saleor",
+      "name": "ProductVariantChannelListing",
+      "kind": "table",
+      "comment": "变体渠道售价配置",
+      "domain": "channels",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "channel",
+          "data_type": "Channel!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "priceAmount",
+          "data_type": "Decimal!",
+          "type_family": "numeric",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "costPriceAmount",
+          "data_type": "Decimal",
+          "type_family": "numeric",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "saleor.Stock",
+      "schema": "saleor",
+      "name": "Stock",
+      "kind": "table",
+      "comment": "SKU 仓库库存：记录在库量与已锁定配额",
+      "domain": "inventory",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "warehouse",
+          "data_type": "Warehouse!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "productVariant",
+          "data_type": "ProductVariant!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "quantity",
+          "data_type": "Int!",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": "在库总数量"
+        },
+        {
+          "name": "quantityAllocated",
+          "data_type": "Int!",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": "已被订单锁定的数量"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "saleor.TransactionItem",
+      "schema": "saleor",
+      "name": "TransactionItem",
+      "kind": "table",
+      "comment": "支付交易流水（支持多笔扣款与退款）",
+      "domain": "billing",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "pspReference",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "authorizedAmount",
+          "data_type": "Decimal!",
+          "type_family": "numeric",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "chargedAmount",
+          "data_type": "Decimal!",
+          "type_family": "numeric",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "refundedAmount",
+          "data_type": "Decimal!",
+          "type_family": "numeric",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "order",
+          "data_type": "Order",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "关联订单"
+        },
+        {
+          "name": "createdAt",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "saleor.User",
+      "schema": "saleor",
+      "name": "User",
+      "kind": "table",
+      "comment": "平台用户（买家与后台员工）",
+      "domain": "customers",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "email",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "firstName",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "lastName",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "isActive",
+          "data_type": "Boolean!",
+          "type_family": "bool",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "isStaff",
+          "data_type": "Boolean!",
+          "type_family": "bool",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "defaultShippingAddress",
+          "data_type": "Address",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "默认收货地址"
+        },
+        {
+          "name": "defaultBillingAddress",
+          "data_type": "Address",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "默认账单地址"
+        },
+        {
+          "name": "addresses",
+          "data_type": "[Address!]",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "常用地址簿"
+        },
+        {
+          "name": "orders",
+          "data_type": "[Order]",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "历史订单（Connection 折叠为 1:N 关系）"
+        },
+        {
+          "name": "dateJoined",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "email"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "saleor.Warehouse",
+      "schema": "saleor",
+      "name": "Warehouse",
+      "kind": "table",
+      "comment": "仓库：管理实体库位与可履约区域",
+      "domain": "inventory",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "slug",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "email",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "address",
+          "data_type": "Address!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "仓库地址"
+        },
+        {
+          "name": "stocks",
+          "data_type": "[Stock]",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "仓库内 SKU 库存（Connection 折叠为 1:N 关系）"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "slug"
+        ],
+        [
+          "email"
+        ]
+      ],
+      "indexes": []
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel_01e0b2123e73235bce021386609276b4",
+      "from_table": "saleor.Product",
+      "from_columns": [
+        "category"
+      ],
+      "to_table": "saleor.Category",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_054bfefa306ee45ce1c0554ad313c0a0",
+      "from_table": "saleor.Category",
+      "from_columns": [
+        "products"
+      ],
+      "to_table": "saleor.Product",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_06960ae04f86c1e5b8e94c3c71609887",
+      "from_table": "saleor.Stock",
+      "from_columns": [
+        "warehouse"
+      ],
+      "to_table": "saleor.Warehouse",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_09df29bf204263f589a1d779b8fd56a8",
+      "from_table": "saleor.Checkout",
+      "from_columns": [
+        "billingAddress"
+      ],
+      "to_table": "saleor.Address",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_0d41fef4da8b5a177be6c830a7d3a4d0",
+      "from_table": "saleor.Order",
+      "from_columns": [
+        "lines"
+      ],
+      "to_table": "saleor.OrderLine",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_0f9f813d98fd504b41f32d4a94b0ed3b",
+      "from_table": "saleor.Category",
+      "from_columns": [
+        "children"
+      ],
+      "to_table": "saleor.Category",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_1aa63dc50f56f09786e230cd2ec71961",
+      "from_table": "saleor.Stock",
+      "from_columns": [
+        "productVariant"
+      ],
+      "to_table": "saleor.ProductVariant",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_1bb6ef35254fc8f48b2e4e6f4a5f3f06",
+      "from_table": "saleor.Collection",
+      "from_columns": [
+        "products"
+      ],
+      "to_table": "saleor.Product",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_1dfc9d5505649c7dbcf0d0be733ca5dc",
+      "from_table": "saleor.ProductVariant",
+      "from_columns": [
+        "stocks"
+      ],
+      "to_table": "saleor.Stock",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_1edc1ef31b4ace394eb0b74f623f9fdb",
+      "from_table": "saleor.User",
+      "from_columns": [
+        "defaultShippingAddress"
+      ],
+      "to_table": "saleor.Address",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_23c305de154c5d6c43b06d0369bc728a",
+      "from_table": "saleor.ProductVariant",
+      "from_columns": [
+        "channelListings"
+      ],
+      "to_table": "saleor.ProductVariantChannelListing",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_3a1c4071c599e3ffe85c1649ce4521a4",
+      "from_table": "saleor.Product",
+      "from_columns": [
+        "collections"
+      ],
+      "to_table": "saleor.Collection",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_3c46f23bf7eb3870dbc7af0cd421fff1",
+      "from_table": "saleor.Fulfillment",
+      "from_columns": [
+        "warehouse"
+      ],
+      "to_table": "saleor.Warehouse",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_44297384e4e00a07fc581ec74f682afc",
+      "from_table": "saleor.Allocation",
+      "from_columns": [
+        "stock"
+      ],
+      "to_table": "saleor.Stock",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_47fdd4d33690b918ef355cf32abf3997",
+      "from_table": "saleor.ProductChannelListing",
+      "from_columns": [
+        "channel"
+      ],
+      "to_table": "saleor.Channel",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_4aa37e4ba1065a5493798a204a4eb07e",
+      "from_table": "saleor.Checkout",
+      "from_columns": [
+        "shippingAddress"
+      ],
+      "to_table": "saleor.Address",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_53b786fa2abe2f26fc86342dd8adff06",
+      "from_table": "saleor.Product",
+      "from_columns": [
+        "productType"
+      ],
+      "to_table": "saleor.ProductType",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_5c03db848fc07e838ee1c57e387dd694",
+      "from_table": "saleor.CheckoutLine",
+      "from_columns": [
+        "variant"
+      ],
+      "to_table": "saleor.ProductVariant",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_5ed02709eb6424449a410e21d09e0765",
+      "from_table": "saleor.Order",
+      "from_columns": [
+        "channel"
+      ],
+      "to_table": "saleor.Channel",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_5f820ed0554379bee7bfa6dde8bcbdd9",
+      "from_table": "saleor.Order",
+      "from_columns": [
+        "user"
+      ],
+      "to_table": "saleor.User",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_63c68eb7d902962cb6b03294bfdc7861",
+      "from_table": "saleor.Order",
+      "from_columns": [
+        "fulfillments"
+      ],
+      "to_table": "saleor.Fulfillment",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_7656ee8e4a1db29a94ed02e54eba7953",
+      "from_table": "saleor.OrderLine",
+      "from_columns": [
+        "allocations"
+      ],
+      "to_table": "saleor.Allocation",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_812b3a63bf9734bbca4298e891c2c132",
+      "from_table": "saleor.Channel",
+      "from_columns": [
+        "warehouses"
+      ],
+      "to_table": "saleor.Warehouse",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_87b6b38db28f7dc1be1fb658906e1402",
+      "from_table": "saleor.TransactionItem",
+      "from_columns": [
+        "order"
+      ],
+      "to_table": "saleor.Order",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_8e179c868044bc10ef820f89ecfdbb72",
+      "from_table": "saleor.Checkout",
+      "from_columns": [
+        "lines"
+      ],
+      "to_table": "saleor.CheckoutLine",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_950aa9e4395f697e36fd375407917c20",
+      "from_table": "saleor.Checkout",
+      "from_columns": [
+        "channel"
+      ],
+      "to_table": "saleor.Channel",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_a8d20457c01b6a5ac066d9a3fd9d22a6",
+      "from_table": "saleor.Product",
+      "from_columns": [
+        "defaultVariant"
+      ],
+      "to_table": "saleor.ProductVariant",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_a91fa3a009176b08dcbcae74f25230a7",
+      "from_table": "saleor.OrderLine",
+      "from_columns": [
+        "variant"
+      ],
+      "to_table": "saleor.ProductVariant",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_aa9b7d1ac83b28289251b10af529f108",
+      "from_table": "saleor.Checkout",
+      "from_columns": [
+        "user"
+      ],
+      "to_table": "saleor.User",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_ad3bcd45325c2a6ae8e56a4def2c8140",
+      "from_table": "saleor.Product",
+      "from_columns": [
+        "variants"
+      ],
+      "to_table": "saleor.ProductVariant",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_b4bf73bb3de9171ae61eb4906069b094",
+      "from_table": "saleor.Warehouse",
+      "from_columns": [
+        "address"
+      ],
+      "to_table": "saleor.Address",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_b74374fdff1e3a19b2ce28c0617fba6b",
+      "from_table": "saleor.Order",
+      "from_columns": [
+        "shippingAddress"
+      ],
+      "to_table": "saleor.Address",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_badd2a54e67566486eca501dc5b6ef93",
+      "from_table": "saleor.ProductVariantChannelListing",
+      "from_columns": [
+        "channel"
+      ],
+      "to_table": "saleor.Channel",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_bb41bcf05325cad162b1b9e148c5b785",
+      "from_table": "saleor.User",
+      "from_columns": [
+        "orders"
+      ],
+      "to_table": "saleor.Order",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_c22c57d29e66575bd1e9b74144e57ef6",
+      "from_table": "saleor.Warehouse",
+      "from_columns": [
+        "stocks"
+      ],
+      "to_table": "saleor.Stock",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_c65b698f94e43776035ef352b45e38d8",
+      "from_table": "saleor.Product",
+      "from_columns": [
+        "channelListings"
+      ],
+      "to_table": "saleor.ProductChannelListing",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_ce72513ee45485f9c0dd3ff4924d284a",
+      "from_table": "saleor.ProductVariant",
+      "from_columns": [
+        "product"
+      ],
+      "to_table": "saleor.Product",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_d7f52dd1dc9e7fff11cd040dbc673fe4",
+      "from_table": "saleor.Category",
+      "from_columns": [
+        "parent"
+      ],
+      "to_table": "saleor.Category",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_d8891af40d8682c3f8e5f7d46e89db26",
+      "from_table": "saleor.ProductType",
+      "from_columns": [
+        "products"
+      ],
+      "to_table": "saleor.Product",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_dbb8fbd1b71b2639d3835d2b492915e7",
+      "from_table": "saleor.User",
+      "from_columns": [
+        "defaultBillingAddress"
+      ],
+      "to_table": "saleor.Address",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_e7eb1a091745922b10c2e14483f7087a",
+      "from_table": "saleor.Order",
+      "from_columns": [
+        "transactions"
+      ],
+      "to_table": "saleor.TransactionItem",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_f1438f74b9bd346c4b998c6746ab299b",
+      "from_table": "saleor.Order",
+      "from_columns": [
+        "billingAddress"
+      ],
+      "to_table": "saleor.Address",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_fe121453d5b6449691ca9371a5e7ea7f",
+      "from_table": "saleor.User",
+      "from_columns": [
+        "addresses"
+      ],
+      "to_table": "saleor.Address",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    }
+  ],
+  "warnings": [
+    "已自动折叠 4 个 GraphQL Connection 包装类型，仅展示核心业务实体与实体间关系。"
+  ],
+  "source_meta": {
+    "provider": "saleor",
+    "version": "Saleor 3.20 (Core SDL)",
+    "fetched_at": "2026-11-18",
+    "read_only_note": "仅读取 GraphQL Schema 元数据，不查询任何业务数据行"
+  }
+}

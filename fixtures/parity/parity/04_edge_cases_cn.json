@@ -1,0 +1,355 @@
+{
+  "dialect": "sqlfile",
+  "tables": [
+    {
+      "id": "auth.TenantAccount",
+      "schema": "auth",
+      "name": "TenantAccount",
+      "kind": "table",
+      "comment": "多租户主账号表（含复合主键与带引号大小写混合标识符），用于隔离不同企业的订单与财务数据。",
+      "is_partition": false,
+      "partition_of": null,
+      "columns": [
+        {
+          "name": "TenantID",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": "租户唯一标识，与 AccountCode 共同构成复合主键"
+        },
+        {
+          "name": "AccountCode",
+          "data_type": "VARCHAR(64)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "display_name",
+          "data_type": "TEXT",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "对外展示的企业全称（支持长中文备注自动换行测试，确保右侧面板与画布悬停浮层不截断、不溢出视口边界）"
+        },
+        {
+          "name": "contact_email",
+          "data_type": "TEXT",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "created_at",
+          "data_type": "TIMESTAMP",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "TenantID",
+        "AccountCode"
+      ],
+      "unique_keys": [
+        [
+          "contact_email"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "billing.audit_events",
+      "schema": "billing",
+      "name": "audit_events",
+      "kind": "table",
+      "comment": "无主键审计日志追加表（验证无主键表在画布、Inspector 与导出中的稳定渲染）",
+      "is_partition": false,
+      "partition_of": null,
+      "columns": [
+        {
+          "name": "occurred_at",
+          "data_type": "TIMESTAMP",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "comment": null
+        },
+        {
+          "name": "actor",
+          "data_type": "TEXT",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "action",
+          "data_type": "TEXT",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "payload",
+          "data_type": "JSONB",
+          "type_family": "json",
+          "nullable": true,
+          "default": null,
+          "comment": "变更前后的结构化 JSON 快照，不含任何业务敏感凭据"
+        }
+      ],
+      "primary_key": [],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "billing.mv_monthly_revenue",
+      "schema": "billing",
+      "name": "mv_monthly_revenue",
+      "kind": "materialized_view",
+      "comment": "月度营收汇总物化视图（界面需明确标记为 MVIEW）",
+      "columns": [
+        {
+          "name": "tenant_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "account_code",
+          "data_type": "VARCHAR(64)",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "gross_revenue",
+          "data_type": "",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "billing.sales_orders",
+      "schema": "billing",
+      "name": "sales_orders",
+      "kind": "table",
+      "comment": "财务销售订单主表（范围分区父表），通过复合外键关联多租户主账号。",
+      "is_partition": true,
+      "partition_of": null,
+      "columns": [
+        {
+          "name": "order_id",
+          "data_type": "BIGINT",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "tenant_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "account_code",
+          "data_type": "VARCHAR(64)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "status",
+          "data_type": "order_status",
+          "type_family": "text",
+          "nullable": false,
+          "default": "'draft'",
+          "comment": "订单履约状态（自定义枚举类型 order_status）"
+        },
+        {
+          "name": "total_amount",
+          "data_type": "cn_currency_amount",
+          "type_family": "numeric",
+          "nullable": false,
+          "default": "0",
+          "comment": "订单应付总金额，使用自定义域类型 cn_currency_amount 确保非负"
+        },
+        {
+          "name": "remark",
+          "data_type": "TEXT",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "created_at",
+          "data_type": "TIMESTAMP",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": "CURRENT_TIMESTAMP",
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "order_id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "billing.sales_orders_2026",
+      "schema": "billing",
+      "name": "sales_orders_2026",
+      "kind": "table",
+      "comment": "2026 年度订单子分区表",
+      "is_partition": true,
+      "partition_of": "billing.sales_orders",
+      "columns": [
+        {
+          "name": "order_id",
+          "data_type": "BIGINT",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "tenant_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "account_code",
+          "data_type": "VARCHAR(64)",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "status",
+          "data_type": "order_status",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "total_amount",
+          "data_type": "cn_currency_amount",
+          "type_family": "numeric",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "created_at",
+          "data_type": "TIMESTAMP",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "order_id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "billing.v_active_orders",
+      "schema": "billing",
+      "name": "v_active_orders",
+      "kind": "view",
+      "comment": "活跃销售订单逻辑视图（界面需明确标记为 VIEW）",
+      "columns": [
+        {
+          "name": "order_id",
+          "data_type": "BIGINT",
+          "type_family": "integer",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "tenant_id",
+          "data_type": "INTEGER",
+          "type_family": "integer",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "account_code",
+          "data_type": "VARCHAR(64)",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "status",
+          "data_type": "order_status",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "total_amount",
+          "data_type": "cn_currency_amount",
+          "type_family": "numeric",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [],
+      "unique_keys": [],
+      "indexes": []
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel_85ae45201f8a4e139828be8f961c0e93",
+      "from_table": "billing.sales_orders",
+      "from_columns": [
+        "tenant_id",
+        "account_code"
+      ],
+      "to_table": "auth.TenantAccount",
+      "to_columns": [
+        "TenantID",
+        "AccountCode"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    }
+  ],
+  "warnings": []
+}

@@ -1,0 +1,1726 @@
+{
+  "dialect": "graphql",
+  "tables": [
+    {
+      "id": "shopify.Collection",
+      "schema": "shopify",
+      "name": "Collection",
+      "kind": "table",
+      "comment": "商品集合（手动集合或智能规则集合）",
+      "domain": "catalog",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "handle",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "title",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "description",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "products",
+          "data_type": "[Product]",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "集合内商品（Connection 折叠为 1:N 关系）"
+        },
+        {
+          "name": "updatedAt",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "handle"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "shopify.Customer",
+      "schema": "shopify",
+      "name": "Customer",
+      "kind": "table",
+      "comment": "客户档案（Customer）",
+      "domain": "customers",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "email",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "firstName",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "lastName",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "phone",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "numberOfOrders",
+          "data_type": "UnsignedInt64!",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": "历史订单总数"
+        },
+        {
+          "name": "defaultAddress",
+          "data_type": "MailingAddress",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "默认收货地址"
+        },
+        {
+          "name": "addresses",
+          "data_type": "[MailingAddress!]!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "客户地址簿"
+        },
+        {
+          "name": "orders",
+          "data_type": "[Order]",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "客户历史订单（Connection 折叠为 1:N 关系）"
+        },
+        {
+          "name": "createdAt",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "email"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "shopify.DiscountNode",
+      "schema": "shopify",
+      "name": "DiscountNode",
+      "kind": "table",
+      "comment": "促销折扣节点（DiscountNode）",
+      "domain": "billing",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "title",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "code",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "status",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "startsAt",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "endsAt",
+          "data_type": "DateTime",
+          "type_family": "timestamp",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "shopify.DraftOrder",
+      "schema": "shopify",
+      "name": "DraftOrder",
+      "kind": "table",
+      "comment": "草稿订单（DraftOrder）：用于 B2B 报价单或客服代下单",
+      "domain": "orders",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "status",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "customer",
+          "data_type": "Customer",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "关联客户"
+        },
+        {
+          "name": "order",
+          "data_type": "Order",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "转化生成的正式订单"
+        },
+        {
+          "name": "lineItems",
+          "data_type": "[LineItem]",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "草稿商品行（Connection 折叠为 1:N 关系）"
+        },
+        {
+          "name": "shippingAddress",
+          "data_type": "MailingAddress",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "收货地址"
+        },
+        {
+          "name": "createdAt",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "shopify.Fulfillment",
+      "schema": "shopify",
+      "name": "Fulfillment",
+      "kind": "table",
+      "comment": "发货单（Fulfillment）：记录承运商、运单号与发货状态",
+      "domain": "inventory",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "status",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "trackingCompany",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "trackingNumber",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "order",
+          "data_type": "Order!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "所属订单"
+        },
+        {
+          "name": "location",
+          "data_type": "Location",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "出库仓库"
+        },
+        {
+          "name": "createdAt",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "shopify.FulfillmentOrder",
+      "schema": "shopify",
+      "name": "FulfillmentOrder",
+      "kind": "table",
+      "comment": "履约指令单（FulfillmentOrder）：分配给具体仓库执行的发货任务",
+      "domain": "inventory",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "status",
+          "data_type": "FulfillmentOrderStatus!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "枚举值：OPEN, IN_PROGRESS, SCHEDULED, ON_HOLD, CLOSED, CANCELLED"
+        },
+        {
+          "name": "order",
+          "data_type": "Order!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "所属订单"
+        },
+        {
+          "name": "assignedLocation",
+          "data_type": "Location!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "指派履约仓库"
+        },
+        {
+          "name": "fulfillments",
+          "data_type": "[Fulfillment]",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "关联发货单（Connection 折叠为 1:N 关系）"
+        },
+        {
+          "name": "fulfillAt",
+          "data_type": "DateTime",
+          "type_family": "timestamp",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "shopify.InventoryItem",
+      "schema": "shopify",
+      "name": "InventoryItem",
+      "kind": "table",
+      "comment": "库存条目（InventoryItem）：跨多仓位跟踪 SKU 成本与库存",
+      "domain": "inventory",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "sku",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "tracked",
+          "data_type": "Boolean!",
+          "type_family": "bool",
+          "nullable": false,
+          "default": null,
+          "comment": "是否跟踪库存"
+        },
+        {
+          "name": "requiresShipping",
+          "data_type": "Boolean!",
+          "type_family": "bool",
+          "nullable": false,
+          "default": null,
+          "comment": "是否需要物流配送"
+        },
+        {
+          "name": "unitCostAmount",
+          "data_type": "Decimal",
+          "type_family": "numeric",
+          "nullable": true,
+          "default": null,
+          "comment": "采购单位成本"
+        },
+        {
+          "name": "variant",
+          "data_type": "ProductVariant",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "所属变体"
+        },
+        {
+          "name": "inventoryLevels",
+          "data_type": "[InventoryLevel]",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "各仓库/门店的库存水位（Connection 折叠为 1:N 关系）"
+        },
+        {
+          "name": "updatedAt",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "sku"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "shopify.InventoryLevel",
+      "schema": "shopify",
+      "name": "InventoryLevel",
+      "kind": "table",
+      "comment": "库位库存水位（InventoryLevel）：记录特定仓库下某 SKU 的可用量",
+      "domain": "inventory",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "available",
+          "data_type": "Int!",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": "可用库存数量"
+        },
+        {
+          "name": "incoming",
+          "data_type": "Int!",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": "在途补货数量"
+        },
+        {
+          "name": "item",
+          "data_type": "InventoryItem!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "所属库存条目"
+        },
+        {
+          "name": "location",
+          "data_type": "Location!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "所在仓库/门店位置"
+        },
+        {
+          "name": "updatedAt",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "shopify.LineItem",
+      "schema": "shopify",
+      "name": "LineItem",
+      "kind": "table",
+      "comment": "订单商品明细行（LineItem）",
+      "domain": "orders",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "title",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "sku",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "quantity",
+          "data_type": "Int!",
+          "type_family": "integer",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "originalUnitPriceAmount",
+          "data_type": "Decimal!",
+          "type_family": "numeric",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "product",
+          "data_type": "Product",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "关联商品"
+        },
+        {
+          "name": "variant",
+          "data_type": "ProductVariant",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "关联变体"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "sku"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "shopify.Location",
+      "schema": "shopify",
+      "name": "Location",
+      "kind": "table",
+      "comment": "仓库与线下门店位置（Location）",
+      "domain": "inventory",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "isActive",
+          "data_type": "Boolean!",
+          "type_family": "bool",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "fulfillsOnlineOrders",
+          "data_type": "Boolean!",
+          "type_family": "bool",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "address",
+          "data_type": "MailingAddress!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "仓库物理地址"
+        },
+        {
+          "name": "inventoryLevels",
+          "data_type": "[InventoryLevel]",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "该位置的全部库存水位（Connection 折叠为 1:N 关系）"
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "shopify.MailingAddress",
+      "schema": "shopify",
+      "name": "MailingAddress",
+      "kind": "table",
+      "comment": "邮寄地址（MailingAddress）",
+      "domain": "customers",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "address1",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "city",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "province",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "country",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "zip",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "phone",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "shopify.Market",
+      "schema": "shopify",
+      "name": "Market",
+      "kind": "table",
+      "comment": "跨境市场（Market）：管理区域币种与定价目录",
+      "domain": "channels",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "handle",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "enabled",
+          "data_type": "Boolean!",
+          "type_family": "bool",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "primary",
+          "data_type": "Boolean!",
+          "type_family": "bool",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "handle"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "shopify.Media",
+      "schema": "shopify",
+      "name": "Media",
+      "kind": "table",
+      "comment": "商品媒体资源（图片 / 3D 模型 / 视频）",
+      "domain": "catalog",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "alt",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "mediaContentType",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "previewUrl",
+          "data_type": "URL",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [],
+      "indexes": []
+    },
+    {
+      "id": "shopify.Order",
+      "schema": "shopify",
+      "name": "Order",
+      "kind": "table",
+      "comment": "Shopify 订单（Order）：连接买家、订单行、履约单与发货记录",
+      "domain": "orders",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "name",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "订单展示号（如 #1001）"
+        },
+        {
+          "name": "email",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "displayFinancialStatus",
+          "data_type": "OrderDisplayFinancialStatus",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": "财务支付状态 · 枚举值：PENDING, AUTHORIZED, PARTIALLY_PAID, PAID, PARTIALLY_REFUNDED, REFUNDED…"
+        },
+        {
+          "name": "displayFulfillmentStatus",
+          "data_type": "OrderDisplayFulfillmentStatus!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "履约发货状态 · 枚举值：UNFULFILLED, PARTIALLY_FULFILLED, FULFILLED, ON_HOLD, SCHEDULED"
+        },
+        {
+          "name": "totalPriceAmount",
+          "data_type": "Decimal!",
+          "type_family": "numeric",
+          "nullable": false,
+          "default": null,
+          "comment": "订单实付总金额"
+        },
+        {
+          "name": "currencyCode",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "币种代码"
+        },
+        {
+          "name": "customer",
+          "data_type": "Customer",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "下单客户"
+        },
+        {
+          "name": "shippingAddress",
+          "data_type": "MailingAddress",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "收货地址"
+        },
+        {
+          "name": "billingAddress",
+          "data_type": "MailingAddress",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "账单地址"
+        },
+        {
+          "name": "lineItems",
+          "data_type": "[LineItem]",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "订单商品明细行（Connection 折叠为 1:N 关系）"
+        },
+        {
+          "name": "fulfillmentOrders",
+          "data_type": "[FulfillmentOrder]",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "履约指令单（Connection 折叠为 1:N 关系）"
+        },
+        {
+          "name": "fulfillments",
+          "data_type": "[Fulfillment!]!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "已生成的发货单"
+        },
+        {
+          "name": "discountNode",
+          "data_type": "DiscountNode",
+          "type_family": "other",
+          "nullable": true,
+          "default": null,
+          "comment": "使用的促销折扣"
+        },
+        {
+          "name": "createdAt",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "email"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "shopify.Product",
+      "schema": "shopify",
+      "name": "Product",
+      "kind": "table",
+      "comment": "Shopify 商品主实体（Product）：包含标题、Handle、状态、变体与媒体资源",
+      "domain": "catalog",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "Shopify GID（gid://shopify/Product/...）"
+        },
+        {
+          "name": "handle",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "商品 URL Handle"
+        },
+        {
+          "name": "title",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "商品标题"
+        },
+        {
+          "name": "vendor",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "品牌/供应商"
+        },
+        {
+          "name": "productType",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "商品分类标签"
+        },
+        {
+          "name": "status",
+          "data_type": "ProductStatus!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": "上架状态（ACTIVE / DRAFT / ARCHIVED） · 枚举值：ACTIVE, ARCHIVED, DRAFT"
+        },
+        {
+          "name": "variants",
+          "data_type": "[ProductVariant]",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "SKU 变体分页集合（Connection 折叠为 1:N 关系）"
+        },
+        {
+          "name": "collections",
+          "data_type": "[Collection]",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "所属集合（Connection 折叠为 1:N 关系）"
+        },
+        {
+          "name": "media",
+          "data_type": "[Media]",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "关联图片与视频媒体（Connection 折叠为 1:N 关系）"
+        },
+        {
+          "name": "createdAt",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "updatedAt",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "handle"
+        ]
+      ],
+      "indexes": []
+    },
+    {
+      "id": "shopify.ProductVariant",
+      "schema": "shopify",
+      "name": "ProductVariant",
+      "kind": "table",
+      "comment": "Shopify 商品变体（SKU）：挂接商品与库存条目",
+      "domain": "catalog",
+      "columns": [
+        {
+          "name": "id",
+          "data_type": "ID!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "title",
+          "data_type": "String!",
+          "type_family": "text",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        },
+        {
+          "name": "sku",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": "SKU 货号"
+        },
+        {
+          "name": "barcode",
+          "data_type": "String",
+          "type_family": "text",
+          "nullable": true,
+          "default": null,
+          "comment": "条形码"
+        },
+        {
+          "name": "price",
+          "data_type": "Decimal!",
+          "type_family": "numeric",
+          "nullable": false,
+          "default": null,
+          "comment": "销售单价"
+        },
+        {
+          "name": "compareAtPrice",
+          "data_type": "Decimal",
+          "type_family": "numeric",
+          "nullable": true,
+          "default": null,
+          "comment": "划线原价"
+        },
+        {
+          "name": "inventoryQuantity",
+          "data_type": "Int",
+          "type_family": "integer",
+          "nullable": true,
+          "default": null,
+          "comment": "可售库存总数"
+        },
+        {
+          "name": "product",
+          "data_type": "Product!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "所属商品"
+        },
+        {
+          "name": "inventoryItem",
+          "data_type": "InventoryItem!",
+          "type_family": "other",
+          "nullable": false,
+          "default": null,
+          "comment": "对应的库存管理条目"
+        },
+        {
+          "name": "createdAt",
+          "data_type": "DateTime!",
+          "type_family": "timestamp",
+          "nullable": false,
+          "default": null,
+          "comment": null
+        }
+      ],
+      "primary_key": [
+        "id"
+      ],
+      "unique_keys": [
+        [
+          "sku"
+        ]
+      ],
+      "indexes": []
+    }
+  ],
+  "relations": [
+    {
+      "id": "rel_070ff55bbf210b8f60703db55dacadfa",
+      "from_table": "shopify.FulfillmentOrder",
+      "from_columns": [
+        "order"
+      ],
+      "to_table": "shopify.Order",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_094242bbae5ac42c3b929c19b02bab29",
+      "from_table": "shopify.Location",
+      "from_columns": [
+        "inventoryLevels"
+      ],
+      "to_table": "shopify.InventoryLevel",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_0aa7671515081696ece639092b8adde9",
+      "from_table": "shopify.Order",
+      "from_columns": [
+        "billingAddress"
+      ],
+      "to_table": "shopify.MailingAddress",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_0dc9ef554e9f6102bffa7f931b71a75f",
+      "from_table": "shopify.Order",
+      "from_columns": [
+        "discountNode"
+      ],
+      "to_table": "shopify.DiscountNode",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_11b7869f54de34b5cbc644090858be50",
+      "from_table": "shopify.Customer",
+      "from_columns": [
+        "addresses"
+      ],
+      "to_table": "shopify.MailingAddress",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_1f794f5d41936fde160879435bb5c737",
+      "from_table": "shopify.Fulfillment",
+      "from_columns": [
+        "location"
+      ],
+      "to_table": "shopify.Location",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_297c6d4334daa57088bf9660167c5f53",
+      "from_table": "shopify.DraftOrder",
+      "from_columns": [
+        "lineItems"
+      ],
+      "to_table": "shopify.LineItem",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_39a9ebb8efd3a5f1d560487447a7749e",
+      "from_table": "shopify.InventoryItem",
+      "from_columns": [
+        "variant"
+      ],
+      "to_table": "shopify.ProductVariant",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_3ea925f7555615c112e1e2b7171d9a47",
+      "from_table": "shopify.Order",
+      "from_columns": [
+        "fulfillments"
+      ],
+      "to_table": "shopify.Fulfillment",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_44dce32d6d1162db4a9448e84cb641da",
+      "from_table": "shopify.FulfillmentOrder",
+      "from_columns": [
+        "fulfillments"
+      ],
+      "to_table": "shopify.Fulfillment",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_47454be6d745248edcc3d308bdd02484",
+      "from_table": "shopify.ProductVariant",
+      "from_columns": [
+        "inventoryItem"
+      ],
+      "to_table": "shopify.InventoryItem",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_54d80a8c0645f08625319b39cf5cc911",
+      "from_table": "shopify.DraftOrder",
+      "from_columns": [
+        "shippingAddress"
+      ],
+      "to_table": "shopify.MailingAddress",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_5785e5c124ddda3157352eda6ddb7dd7",
+      "from_table": "shopify.Order",
+      "from_columns": [
+        "customer"
+      ],
+      "to_table": "shopify.Customer",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_5f02c801fb84e05e5e90149e2c94a244",
+      "from_table": "shopify.FulfillmentOrder",
+      "from_columns": [
+        "assignedLocation"
+      ],
+      "to_table": "shopify.Location",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_620488deb3b4050328186400e1caf845",
+      "from_table": "shopify.Fulfillment",
+      "from_columns": [
+        "order"
+      ],
+      "to_table": "shopify.Order",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_62ea6fff7810cf141060334bbe168fb7",
+      "from_table": "shopify.Order",
+      "from_columns": [
+        "fulfillmentOrders"
+      ],
+      "to_table": "shopify.FulfillmentOrder",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_6cfa285a9153f12f8816c3b3a4b528fd",
+      "from_table": "shopify.Order",
+      "from_columns": [
+        "lineItems"
+      ],
+      "to_table": "shopify.LineItem",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_6f2ba929dc801c8071961147cf98662e",
+      "from_table": "shopify.Product",
+      "from_columns": [
+        "variants"
+      ],
+      "to_table": "shopify.ProductVariant",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_709ea22e88daf4c990a59d3e580d8a0d",
+      "from_table": "shopify.DraftOrder",
+      "from_columns": [
+        "customer"
+      ],
+      "to_table": "shopify.Customer",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_7442ac229d075ba4a3e33f9120c49d6f",
+      "from_table": "shopify.LineItem",
+      "from_columns": [
+        "variant"
+      ],
+      "to_table": "shopify.ProductVariant",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_77446f31ffb7de204703d3dc11668fb2",
+      "from_table": "shopify.InventoryItem",
+      "from_columns": [
+        "inventoryLevels"
+      ],
+      "to_table": "shopify.InventoryLevel",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_8c3571fecce0aa034c51728e5b4b0f2f",
+      "from_table": "shopify.LineItem",
+      "from_columns": [
+        "product"
+      ],
+      "to_table": "shopify.Product",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_907df7065c8b6bd21ec80dec0865ea23",
+      "from_table": "shopify.DraftOrder",
+      "from_columns": [
+        "order"
+      ],
+      "to_table": "shopify.Order",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_917abac0cd90c17cae6be9be9fecb0e3",
+      "from_table": "shopify.InventoryLevel",
+      "from_columns": [
+        "item"
+      ],
+      "to_table": "shopify.InventoryItem",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_95ac240c66d94a43f8141744fec2e7e8",
+      "from_table": "shopify.Product",
+      "from_columns": [
+        "media"
+      ],
+      "to_table": "shopify.Media",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_97602a02b920d01fd9f4cf3657c0883e",
+      "from_table": "shopify.Customer",
+      "from_columns": [
+        "defaultAddress"
+      ],
+      "to_table": "shopify.MailingAddress",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_98f11efa885b0dd44bbb54208e39b447",
+      "from_table": "shopify.Location",
+      "from_columns": [
+        "address"
+      ],
+      "to_table": "shopify.MailingAddress",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_9e63dd5ec8b59839d98565daaa470d74",
+      "from_table": "shopify.Product",
+      "from_columns": [
+        "collections"
+      ],
+      "to_table": "shopify.Collection",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_a9402762d6919a361427f386fad259cc",
+      "from_table": "shopify.Customer",
+      "from_columns": [
+        "orders"
+      ],
+      "to_table": "shopify.Order",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_cb2288a8ab14a399ec25c9ffcd0d5c9c",
+      "from_table": "shopify.ProductVariant",
+      "from_columns": [
+        "product"
+      ],
+      "to_table": "shopify.Product",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_d121d85251e441e4aff16c14f1e9b1b2",
+      "from_table": "shopify.InventoryLevel",
+      "from_columns": [
+        "location"
+      ],
+      "to_table": "shopify.Location",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_dc285797ecf05f2a11936ec39093ef13",
+      "from_table": "shopify.Order",
+      "from_columns": [
+        "shippingAddress"
+      ],
+      "to_table": "shopify.MailingAddress",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    },
+    {
+      "id": "rel_f73d4b484fe45eb71bc0269438c62592",
+      "from_table": "shopify.Collection",
+      "from_columns": [
+        "products"
+      ],
+      "to_table": "shopify.Product",
+      "to_columns": [
+        "id"
+      ],
+      "kind": "declared",
+      "status": "auto",
+      "evidence": []
+    }
+  ],
+  "warnings": [
+    "已自动折叠 9 个 GraphQL Connection 包装类型，仅展示核心业务实体与实体间关系。"
+  ],
+  "source_meta": {
+    "provider": "shopify",
+    "version": "Shopify Admin 2026-10",
+    "fetched_at": "2026-11-18",
+    "read_only_note": "仅读取 GraphQL Schema 元数据，不查询任何业务数据行"
+  }
+}

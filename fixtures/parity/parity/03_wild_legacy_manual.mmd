@@ -1,0 +1,49 @@
+erDiagram
+    app_logs {
+        VARCHAR(16) level "NOT NULL"
+        TEXT message "NOT NULL"
+        TIMESTAMP logged_at "NOT NULL"
+    }
+    tbl_categories {
+        INTEGER id PK "NOT NULL"
+        INTEGER parent_id
+        VARCHAR(128) name "NOT NULL"
+    }
+    tbl_customers {
+        INTEGER id PK "NOT NULL"
+        VARCHAR(255) email UK "NOT NULL"
+        INTEGER referrer_id
+        VARCHAR(128) full_name "NOT NULL"
+    }
+    tbl_invoices {
+        INTEGER id PK "NOT NULL"
+        INTEGER order_id "NOT NULL"
+        UUID person_uuid
+        TIMESTAMP issued_at "NOT NULL"
+    }
+    tbl_line_items {
+        INTEGER id PK "NOT NULL"
+        INTEGER invoice_id "NOT NULL"
+        INTEGER product_id "NOT NULL"
+        INTEGER qty "NOT NULL"
+    }
+    tbl_orders {
+        INTEGER id PK "NOT NULL"
+        INTEGER customer_id FK "NOT NULL"
+        INTEGER personId "NOT NULL"
+        VARCHAR(32) status "NOT NULL"
+        TIMESTAMP created_at "NOT NULL"
+    }
+    tbl_people {
+        INTEGER id PK "NOT NULL"
+        VARCHAR(128) full_name "NOT NULL"
+        UUID external_uuid UK "NOT NULL"
+    }
+    tbl_products {
+        INTEGER id PK "NOT NULL"
+        INTEGER category_id "NOT NULL"
+        VARCHAR(64) sku UK "NOT NULL"
+        VARCHAR(255) name "NOT NULL"
+        NUMERIC(10,2) price "NOT NULL"
+    }
+    tbl_customers ||..o{ tbl_orders : "customer_id [manual: 野生库订单归属客户]"

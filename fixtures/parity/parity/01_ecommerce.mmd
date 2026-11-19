@@ -1,0 +1,66 @@
+erDiagram
+    %% View: main.active_orders_view
+    active_orders_view {
+        INTEGER id
+        INTEGER user_id
+        VARCHAR(32) status
+        NUMERIC(12,2) total_amount
+    }
+    categories {
+        INTEGER id PK "NOT NULL"
+        INTEGER parent_id FK
+        VARCHAR(128) slug UK "NOT NULL"
+        VARCHAR(128) name "NOT NULL"
+    }
+    member_audits {
+        INTEGER id PK "NOT NULL"
+        INTEGER tenant_id FK "NOT NULL"
+        INTEGER user_id FK "NOT NULL"
+        VARCHAR(64) action "NOT NULL"
+        TIMESTAMP created_at "NOT NULL"
+    }
+    order_items {
+        INTEGER order_id PK,FK "NOT NULL"
+        INTEGER product_id PK,FK "NOT NULL"
+        INTEGER quantity "NOT NULL"
+        NUMERIC(10,2) unit_price "NOT NULL"
+    }
+    orders {
+        INTEGER id PK "NOT NULL"
+        INTEGER user_id FK "NOT NULL"
+        VARCHAR(32) status "NOT NULL"
+        NUMERIC(12,2) total_amount "NOT NULL"
+        TIMESTAMP created_at "NOT NULL"
+    }
+    products {
+        INTEGER id PK "NOT NULL"
+        INTEGER category_id FK "NOT NULL"
+        VARCHAR(64) sku UK "NOT NULL"
+        VARCHAR(255) name "NOT NULL"
+        NUMERIC(10,2) price "NOT NULL"
+        JSON metadata
+    }
+    raw_events {
+        VARCHAR(64) event_type "NOT NULL"
+        TEXT payload "NOT NULL"
+        TIMESTAMP occurred_at "NOT NULL"
+    }
+    tenant_members {
+        INTEGER tenant_id PK "NOT NULL"
+        INTEGER user_id PK,FK "NOT NULL"
+        VARCHAR(32) role "NOT NULL"
+    }
+    users {
+        INTEGER id PK "NOT NULL"
+        VARCHAR(255) email UK "NOT NULL"
+        VARCHAR(64) username UK "NOT NULL"
+        BOOLEAN is_active "NOT NULL"
+        TIMESTAMP created_at "NOT NULL"
+    }
+    products ||--o{ order_items : "product_id [declared]"
+    categories ||--o{ products : "category_id [declared]"
+    orders ||--o{ order_items : "order_id [declared]"
+    users ||--o{ orders : "user_id [declared]"
+    users ||--o{ tenant_members : "user_id [declared]"
+    categories ||--o{ categories : "parent_id [declared]"
+    tenant_members ||--o{ member_audits : "tenant_id, user_id [declared]"

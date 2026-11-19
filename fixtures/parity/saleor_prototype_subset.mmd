@@ -1,0 +1,234 @@
+erDiagram
+    %% 地址实体：被用户、订单、结算单与仓库复用
+    Address {
+        ID! id PK "NOT NULL"
+        String! firstName "NOT NULL"
+        String! lastName "NOT NULL"
+        String! streetAddress1 "NOT NULL"
+        String! city "NOT NULL"
+        String! postalCode "NOT NULL"
+        String! country "NOT NULL"
+        String phone
+    }
+    %% 订单库存锁定记录
+    Allocation {
+        ID! id PK "NOT NULL"
+        Stock! stock FK "NOT NULL; 锁定的库存记录"
+        Int! quantity "NOT NULL; 锁定数量"
+    }
+    %% 商品类目树：支持多级父子类目
+    Category {
+        ID! id PK "NOT NULL"
+        String! name "NOT NULL"
+        String! slug UK "NOT NULL"
+        Int! level "NOT NULL"
+        Category parent FK "上级类目"
+        [Category] children FK "下级子类目（Connection 折叠为 1:N 关系）"
+        [Product] products FK "类目下的商品（Connection 折叠为 1:N 关系）"
+    }
+    %% 销售渠道：按国家、币种隔离定价与库存
+    Channel {
+        ID! id PK "NOT NULL"
+        String! slug UK "NOT NULL"
+        String! name "NOT NULL"
+        Boolean! isActive "NOT NULL"
+        String! currencyCode "NOT NULL; 默认币种代码（如 USD / CNY）"
+        [Warehouse!]! warehouses FK "NOT NULL; 关联的履约仓库"
+    }
+    %% 结算单（购物车）：下单前的商品与运费暂存状态
+    Checkout {
+        ID! id PK "NOT NULL"
+        UUID! token "NOT NULL"
+        String email UK
+        Channel! channel FK "NOT NULL; 所属销售渠道"
+        User user FK "关联下单用户"
+        Address shippingAddress FK "收货地址"
+        Address billingAddress FK "账单地址"
+        [CheckoutLine!]! lines FK "NOT NULL; 购物车明细行"
+        DateTime! created "NOT NULL"
+        DateTime! updatedAt "NOT NULL"
+    }
+    %% 结算单明细行
+    CheckoutLine {
+        ID! id PK "NOT NULL"
+        ProductVariant! variant FK "NOT NULL"
+        Int! quantity "NOT NULL"
+        Decimal! totalPriceAmount "NOT NULL"
+    }
+    %% 营销商品集合
+    Collection {
+        ID! id PK "NOT NULL"
+        String! name "NOT NULL"
+        String! slug UK "NOT NULL"
+        [Product] products FK "集合内商品（Connection 折叠为 1:N 关系）"
+    }
+    %% 订单履约发货单
+    Fulfillment {
+        ID! id PK "NOT NULL"
+        Int! fulfillmentOrder "NOT NULL"
+        FulfillmentStatus! status "NOT NULL; 枚举值：FULFILLED, REFUNDED, RETURNED, CANCELED, WAITING_FOR_APPROVAL"
+        String! trackingNumber "NOT NULL"
+        Warehouse warehouse FK "出库仓库"
+        DateTime! created "NOT NULL"
+    }
+    %% 销售订单：聚合买家、渠道、履约与支付交易
+    Order {
+        ID! id PK "NOT NULL"
+        String! number "NOT NULL; 订单展示编号"
+        OrderStatus! status "NOT NULL; 订单状态 · 枚举值：DRAFT, UNCONFIRMED, UNFULFILLED, PARTIALLY_FULFILLED, FULFILLED, CANCELED"
+        PaymentChargeStatusEnum! paymentStatus "NOT NULL; 支付状态 · 枚举值：NOT_CHARGED, PENDING, PARTIALLY_CHARGED, FULLY_CHARGED, PARTIALLY_REFUNDED, FULLY_REFUNDED"
+        Channel! channel FK "NOT NULL; 所属销售渠道"
+        User user FK "下单客户"
+        Address shippingAddress FK "收货地址"
+        Address billingAddress FK "账单地址"
+        [OrderLine!]! lines FK "NOT NULL; 订单商品明细"
+        [Fulfillment!]! fulfillments FK "NOT NULL; 履约发货单"
+        [TransactionItem!]! transactions FK "NOT NULL; 支付交易记录"
+        Decimal! totalAmount "NOT NULL; 订单应付总额"
+        DateTime! created "NOT NULL"
+    }
+    %% 订单商品明细行
+    OrderLine {
+        ID! id PK "NOT NULL"
+        String! productName "NOT NULL"
+        String! variantName "NOT NULL"
+        Int! quantity "NOT NULL"
+        Decimal! unitPriceAmount "NOT NULL"
+        ProductVariant variant FK "关联的商品变体"
+        [Allocation!] allocations FK "库存锁定记录"
+    }
+    %% 商品主表（SPU）：定义商品名称、类目、商品类型与多渠道上架信息
+    Product {
+        ID! id PK "NOT NULL; 全局唯一 ID"
+        String! slug UK "NOT NULL; 商品 URL Slug"
+        String! name "NOT NULL; 商品名称"
+        JSONString description "富文本描述（EditorJS JSON）"
+        ProductType! productType FK "NOT NULL; 所属商品类型"
+        Category category FK "所属商品类目"
+        ProductVariant defaultVariant FK "默认 SKU 变体"
+        [ProductVariant!] variants FK "下属 SKU 变体列表"
+        [Collection!] collections FK "所属营销集合"
+        [ProductChannelListing!] channelListings FK "渠道定价与上架配置"
+        Boolean isAvailableForPurchase "是否可销售"
+        DateTime! updatedAt "NOT NULL; 最后更新时间"
+    }
+    %% 商品渠道上架与可见性配置
+    ProductChannelListing {
+        ID! id PK "NOT NULL"
+        Channel! channel FK "NOT NULL"
+        Boolean! isPublished "NOT NULL"
+        Boolean! visibleInListings "NOT NULL"
+        DateTime availableForPurchaseAt
+    }
+    %% 商品类型：决定商品及变体的属性模板与物流属性
+    ProductType {
+        ID! id PK "NOT NULL"
+        String! name "NOT NULL"
+        String! slug UK "NOT NULL"
+        Boolean! isShippingRequired "NOT NULL; 是否需要物流配送"
+        Boolean! isDigital "NOT NULL; 是否为数字商品"
+        [Product] products FK "该类型下的商品（Connection 折叠为 1:N 关系）"
+    }
+    %% 商品变体（SKU）：定义货号、库存与渠道价格
+    ProductVariant {
+        ID! id PK "NOT NULL"
+        String sku UK "SKU 编码"
+        String! name "NOT NULL; 变体名称"
+        Product! product FK "NOT NULL; 所属商品 SPU"
+        Boolean! trackInventory "NOT NULL; 是否跟踪库存"
+        [Stock!] stocks FK "各仓库库存记录"
+        [ProductVariantChannelListing!] channelListings FK "渠道售价配置"
+        DateTime! updatedAt "NOT NULL"
+    }
+    %% 变体渠道售价配置
+    ProductVariantChannelListing {
+        ID! id PK "NOT NULL"
+        Channel! channel FK "NOT NULL"
+        Decimal! priceAmount "NOT NULL"
+        Decimal costPriceAmount
+    }
+    %% SKU 仓库库存：记录在库量与已锁定配额
+    Stock {
+        ID! id PK "NOT NULL"
+        Warehouse! warehouse FK "NOT NULL"
+        ProductVariant! productVariant FK "NOT NULL"
+        Int! quantity "NOT NULL; 在库总数量"
+        Int! quantityAllocated "NOT NULL; 已被订单锁定的数量"
+    }
+    %% 支付交易流水（支持多笔扣款与退款）
+    TransactionItem {
+        ID! id PK "NOT NULL"
+        String! name "NOT NULL"
+        String! pspReference "NOT NULL"
+        Decimal! authorizedAmount "NOT NULL"
+        Decimal! chargedAmount "NOT NULL"
+        Decimal! refundedAmount "NOT NULL"
+        Order order FK "关联订单"
+        DateTime! createdAt "NOT NULL"
+    }
+    %% 平台用户（买家与后台员工）
+    User {
+        ID! id PK "NOT NULL"
+        String! email UK "NOT NULL"
+        String! firstName "NOT NULL"
+        String! lastName "NOT NULL"
+        Boolean! isActive "NOT NULL"
+        Boolean! isStaff "NOT NULL"
+        Address defaultShippingAddress FK "默认收货地址"
+        Address defaultBillingAddress FK "默认账单地址"
+        [Address!] addresses FK "常用地址簿"
+        [Order] orders FK "历史订单（Connection 折叠为 1:N 关系）"
+        DateTime! dateJoined "NOT NULL"
+    }
+    %% 仓库：管理实体库位与可履约区域
+    Warehouse {
+        ID! id PK "NOT NULL"
+        String! name "NOT NULL"
+        String! slug UK "NOT NULL"
+        String! email UK "NOT NULL"
+        Address! address FK "NOT NULL; 仓库地址"
+        [Stock] stocks FK "仓库内 SKU 库存（Connection 折叠为 1:N 关系）"
+    }
+    Category ||--o{ Product : "category [declared]"
+    Product ||--o{ Category : "products [declared]"
+    Warehouse ||--o{ Stock : "warehouse [declared]"
+    Address ||--o{ Checkout : "billingAddress [declared]"
+    OrderLine ||--o{ Order : "lines [declared]"
+    Category ||--o{ Category : "children [declared]"
+    ProductVariant ||--o{ Stock : "productVariant [declared]"
+    Product ||--o{ Collection : "products [declared]"
+    Stock ||--o{ ProductVariant : "stocks [declared]"
+    Address ||--o{ User : "defaultShippingAddress [declared]"
+    ProductVariantChannelListing ||--o{ ProductVariant : "channelListings [declared]"
+    Collection ||--o{ Product : "collections [declared]"
+    Warehouse ||--o{ Fulfillment : "warehouse [declared]"
+    Stock ||--o{ Allocation : "stock [declared]"
+    Channel ||--o{ ProductChannelListing : "channel [declared]"
+    Address ||--o{ Checkout : "shippingAddress [declared]"
+    ProductType ||--o{ Product : "productType [declared]"
+    ProductVariant ||--o{ CheckoutLine : "variant [declared]"
+    Channel ||--o{ Order : "channel [declared]"
+    User ||--o{ Order : "user [declared]"
+    Fulfillment ||--o{ Order : "fulfillments [declared]"
+    Allocation ||--o{ OrderLine : "allocations [declared]"
+    Warehouse ||--o{ Channel : "warehouses [declared]"
+    Order ||--o{ TransactionItem : "order [declared]"
+    CheckoutLine ||--o{ Checkout : "lines [declared]"
+    Channel ||--o{ Checkout : "channel [declared]"
+    ProductVariant ||--o{ Product : "defaultVariant [declared]"
+    ProductVariant ||--o{ OrderLine : "variant [declared]"
+    User ||--o{ Checkout : "user [declared]"
+    ProductVariant ||--o{ Product : "variants [declared]"
+    Address ||--o{ Warehouse : "address [declared]"
+    Address ||--o{ Order : "shippingAddress [declared]"
+    Channel ||--o{ ProductVariantChannelListing : "channel [declared]"
+    Order ||--o{ User : "orders [declared]"
+    Stock ||--o{ Warehouse : "stocks [declared]"
+    ProductChannelListing ||--o{ Product : "channelListings [declared]"
+    Product ||--o{ ProductVariant : "product [declared]"
+    Category ||--o{ Category : "parent [declared]"
+    Product ||--o{ ProductType : "products [declared]"
+    Address ||--o{ User : "defaultBillingAddress [declared]"
+    TransactionItem ||--o{ Order : "transactions [declared]"
+    Address ||--o{ Order : "billingAddress [declared]"
+    Address ||--o{ User : "addresses [declared]"

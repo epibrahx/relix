@@ -6,4 +6,3 @@
 **/dist/
 crates/relix-app/www/src/wasm/
 relix.toml
-.playwright-cli/
