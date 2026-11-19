@@ -70,3 +70,47 @@
 
 ## Status
 MVP 全部阶段（Phase 0 – Phase 7）实施与验收已完成。
+
+---
+
+## Round-2 精细化打磨计划（2026-11-18，Web 版全面推进）
+
+### Track F — 推断隐藏善后（P0 · 已完成）
+- [x] F1: 全面清理 UI、标题、导出、README 中「推断 / 隐含 / inferred」文案；`ENABLE_INFERENCE = false` 默认关闭，仅在受控核心逻辑与测试中保留代码。
+- [x] F2: 5 种导出格式（Mermaid、Markdown、SVG、HTML、JSON）默认均不含任何推断关系或字段，单元测试已覆盖断言。
+- [x] F3: 开关关闭与显式开启两条测试路径均通过（共 15/15 单元测试通过）。
+- [x] F4: 已将 `docs/POLISH-PLAN.md` 归档入库，并更新 `docs/PROGRESS.md`、`docs/NOTES.md`、`docs/KNOWN-ISSUES.md`。
+
+### Track G — 远程 GraphQL 电商数据源：Saleor & Shopify（P0 · 已完成）
+- [x] G1: 抽象统一 `SchemaSource` 协议、`SourceSpec` 与 GraphQL SDL + Introspection JSON（`__schema`）双格式解析器，实现 `*CountableConnection` / `*Connection` → `edges.node` 自动折叠、非实体过滤与 `@doc(category)` 自动分组；UI 入口明确标注「是否读取业务数据：否」，凭据仅驻留内存不落盘。
+- [x] G2: 落地 Saleor 3.20 核心 SDL 官方快照、本地 `.graphql`/`.json` 文件导入、在线只读内省及文档 `docs/sources/saleor.md`。
+- [x] G3: 落地 Shopify Admin `2026-10` 核心 SDL 官方快照（含 `Product`/`ProductVariant`/`Order`/`FulfillmentOrder`/`InventoryLevel` 等核心实体）、公共代理/店铺端点直连、本地导入及文档 `docs/sources/shopify.md`。
+- [x] G4: 实现 401/403/429/CORS 中文错误分类与 Token 严格脱敏，并在顶部工具栏展示快照版本与日期。
+
+### Track A — 真实边界覆盖与错误体验（P0 · Web 可执行部分已完成，A1/A2 需本地 PG）
+- [ ] A1 / A2: 真实 PostgreSQL 与 PgBouncer 事务级只读实测（当前容器无 PostgreSQL / PgBouncer 服务，已在 `docs/KNOWN-ISSUES.md` 如实标注）。
+- [x] A3: 新增 `fixtures/04_edge_cases_cn.sql` 并升级 SQL 解析器，支持 ENUM、DOMAIN、VIEW、MATERIALIZED VIEW、分区表（`PARTITION BY`/`PARTITION OF`）、多 Schema、带引号大小写混合标识符、复合 PK/FK、无主键表与中英文表/列注释；视图与分区表在侧栏与画布均有醒目标记。
+- [x] A4: 引入 MIT 许可的 Chinook 公开示例库子集 `fixtures/05_chinook_subset.sql`（11 张表、真实多跳外键网），全 5 种导出格式均通过回归断言。
+- [x] A5: 补齐连不上/证书/sslmode/权限/空库/认证失败中文错误分类与 URI/KV/Bearer/Shopify Token 严格脱敏测试。
+
+### Track B — 无外键场景：手动连线（P1 · B1 已完成）
+- [x] B1: 引入独立 `kind: 'manual'` 关系类型（不复用 `inferred`），支持画布字段拖线与 Inspector 快捷创建、中文备注编辑、删除、按表名+字段名持久化、字段类型族不匹配非阻断提示、重载时目标表/字段缺失红色警告（不静默丢失）、紫色虚线+空心圆/菱形端点样式，以及全 5 种导出格式的来源标注。
+
+### Track C — 中文场景打磨（P1 · 已完成）
+- [x] C1: 引入中文字体回退栈（PingFang SC / Microsoft YaHei / Noto Sans CJK SC）。
+- [x] C2: 搜索框支持中文输入法组合态（`compositionstart`/`compositionend`）与表名/字段名/中文注释联合检索。
+- [x] C3: 画布悬停浮层支持长中文注释自动换行与视口边界防溢出，右侧 Inspector 完整展示多行中文注释。
+
+### Track D — 画布体验打磨（P2 · D1–D6 已完成）
+- [x] D1: 正交避障路由，在 01–05 fixtures 与 100 表压测集上实测穿过无关表卡片线段数为 **0**。
+- [x] D2: 连线锚点精确贴齐起止字段行，悬停/选中连线时双向高亮端点字段行。
+- [x] D3: 「重新读取」按钮保留既有节点坐标，为新增表与变更字段提供轻量 `NEW`/`MOD` 徽标与移除警告（不做完整 Diff 视图）。
+- [x] D4: 业务域聚类分组布局（`groupedSugiyamaLayout`），各域容器带标题栏与内联折叠按钮，彻底消除域容器重叠。
+- [x] D5: 表卡片三级密度切换（紧凑 / 标准 / 详细）与内联 `PK`/`FK`/`UQ`/`?` 徽标。
+- [x] D6: 快捷键导航（`/` 聚焦搜索、方向键遍历关联表、`Esc` 关闭弹窗/退出连线/取消选中）与无障碍 `aria-label` / `role`。
+
+### Track E — 首次体验与导出质感（P2 · E1–E2 已完成，E3 仅适用 Rust WASM）
+- [x] E1: 默认启动加载 `01 电商示例` 并自动适配视口居中完整展示。
+- [x] E2: SVG 与单文件交互式 HTML 导出新增浅色/深色主题切换与声明/手动图例，Markdown 导出补全表与列注释。
+- [ ] E3: Rust `wasm-opt` 产物体积与加载耗时记录（当前运行环境为 React/Vite Web 应用，无 Rust/wasm-opt 工具链，已在 `docs/KNOWN-ISSUES.md` 如实记录）。
+

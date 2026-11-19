@@ -1,98 +1,32 @@
 # RELIX
 
-> **Read-only Database Schema Visualizer (Structural Layer MVP)** — Built with Rust + [GPUI Kit](https://gpui-kit.com) for Native Desktop and WebAssembly.
+**RELIX** 是一款只读的数据库与 GraphQL Schema 结构可视化工作台：读取 SQL DDL / Schema JSON / Saleor & Shopify GraphQL Schema，自动绘制清晰的 ER 图，**展示声明外键关系与用户手动建立的关系**，并支持离线导出文档与交互式图谱。
 
-Input a SQLite database, PostgreSQL connection string, or `schema.sql` DDL file and immediately explore an interactive Entity-Relationship diagram with deterministic implicit foreign-key inference, domain grouping, N-hop focus mode, and offline documentation exports.
+## 核心特性
 
----
+- **只读与隐私安全红线**：仅读取表结构与 Schema 元数据，**绝不查询任何业务数据行**；访问 Token 与密码仅驻留内存，绝不写入本地存储、日志或导出文件。
+- **远程 GraphQL 数据源（Saleor & Shopify）**：内置 Saleor 3.20 与 Shopify Admin `2026-10` 官方核心 SDL 快照，支持本地 `.graphql` / Introspection JSON 导入及在线只读 `__schema` 内省；自动折叠 `*CountableConnection` / `*Connection` 分页包装类型为 `1:N` 实体关系。
+- **手动关系（适配无外键库）**：支持在画布上从字段拖线至另一张表的字段（或在右侧面板中精准创建），支持添加备注、删除、类型不匹配提醒、重新读取时缺失目标标红警告，并在全部 5 种导出格式中明确标注来源。
+- **清晰画布与中文支持**：
+  - 避障正交布线（不穿越无关表卡片）+ 字段行级锚点 + 悬停连线双向高亮端点字段
+  - 三级卡片密度（紧凑 / 标准 / 详细）+ `PK` / `FK` / `UQ` / `?` 徽标 + `VIEW` / `MVIEW` / 分区标记
+  - 完整中文表/列注释自动换行展示、IME 输入法兼容搜索、键盘导航（`/` 搜索、方向键沿关系跳转、`Esc` 清除选中）
+  - 一键「重新读取 (Reload)」保留现有节点坐标，仅轻量标记新增表与变更字段
+- **五种离线导出格式**：Mermaid `erDiagram`、Markdown 数据字典（含完整表/列注释）、浅/深色 SVG（含图例与避障布线）、零外链交互式 HTML、JSON。
 
-## Key Capabilities
-
-- **Strictly Read-Only Schema Inspection**:
-  - **SQLite**: Opens databases with `SQLITE_OPEN_READ_ONLY` + `PRAGMA query_only = ON`, inspecting only `PRAGMA` / `sqlite_master`.
-  - **PostgreSQL**: Executes `SET default_transaction_read_only = on` + `BEGIN READ ONLY` and queries only `information_schema` / `pg_catalog`.
-  - **SQL DDL / Schema JSON**: Parses `.sql` files (tolerating non-DDL statements as warnings) and loads pre-exported `Schema` JSON anywhere, including in WASM.
-  - **Never queries business rows** and **never stores or prints connection credentials**.
-- **Deterministic Implicit Relation Inference** (no opaque scoring or thresholds):
-  - Matches `<x>_id` / `<x>Id` / `<x>_uuid` columns to single-column PK/UQ keys of `<x>` (singular/plural + `tbl_` / `t_` prefixes + `parent_id` self-references) with normalized `TypeFamily` equality.
-  - Renders unconfirmed inferred edges as dashed lines with full rule `evidence` on hover/selection.
-  - Ambiguous multi-candidate columns are never auto-drawn; resolve them manually in the Inspector.
-- **Interactive GPU Workbench (Desktop & WASM)**:
-  - Pan, cursor-centered scroll zoom, node dragging with `relix.toml` persistence, viewport culling, and 3-tier LOD (~115 FPS on 500 tables on Desktop; verified in `docs/SPIKE-REPORT.md`).
-  - Table & column search with smooth camera centering + flash highlight.
-  - Direct 1-hop upstream/downstream highlighting, adjustable N-hop Focus mode, automatic/manual domain groups (with collapse to group nodes), `syntect` read-only SQL DDL inspector, and system dark/light appearance sync.
-- **Exporters (CLI & UI)**:
-  - Mermaid `erDiagram` (`--format mermaid`, solid vs dashed inferred edges)
-  - Markdown Data Dictionary (`--format md`)
-  - Standalone SVG (`--format svg`)
-  - Single-File Offline Interactive HTML (`--format html`, pan/zoom/search/1-hop highlight)
-  - Normalized Schema JSON (`--format json`)
-
----
-
-## 1-Minute Quickstart
-
-### Prerequisites
-Managed via [`mise`](https://mise.jdx.dev/) (see `mise.toml` and `rust-toolchain.toml`):
-- Rust `stable` (workspace default)
-- For WASM: Rust `nightly` (`rustup toolchain install nightly --target wasm32-unknown-unknown --profile minimal`), `wasm-bindgen-cli@0.2.130`, and `bun`
-
-### Launch Desktop Workbench
+## 本地运行
 
 ```bash
-# Open built-in Blog/CMS fixture
-cargo run -p relix-app
-
-# Open a SQLite file, SQL DDL file, schema JSON, or read-only Postgres URI
-cargo run -p relix-app -- fixtures/01_ecommerce.db
-cargo run -p relix-app -- fixtures/03_wild_legacy.sql
-cargo run -p relix-app -- "postgres://readonly_user@localhost:5432/mydb"
+npm install
+npm run dev      # 启动开发服务 http://localhost:3000
+npm run lint     # TypeScript 类型检查
+npm run build    # 生产构建
 ```
 
-### CLI Exports (Headless)
+## 文档索引
 
-```bash
-cargo run -p relix-app -- export fixtures/02_blog_cms.db --format mermaid -o schema.mmd
-cargo run -p relix-app -- export fixtures/02_blog_cms.db --format md -o DICTIONARY.md
-cargo run -p relix-app -- export fixtures/02_blog_cms.db --format svg -o diagram.svg
-cargo run -p relix-app -- export fixtures/02_blog_cms.db --format html -o diagram.html
-```
-
-### Run WASM Web Build
-
-```bash
-./crates/relix-app/scripts/build-wasm.sh --release
-cd crates/relix-app/www && bun install && bun run dev
-```
-
-Open `http://localhost:4173` (served with required `COOP`/`COEP` headers for `wasm_thread`).
-
----
-
-## Workspace Architecture
-
-| Crate | Purpose | WASM Compatible |
-| --- | --- | --- |
-| [`crates/relix-core`](crates/relix-core) | Unified `Schema` model, type normalization, deterministic inference (`C1`–`C4`), URL redaction, TOML config, exporters | Yes (`stable`) |
-| [`crates/relix-layout`](crates/relix-layout) | Hierarchical Sugiyama-style layout (`LayoutEngine`, cycle breaking, barycenter ordering, overlap resolution, N-hop subgraph) | Yes (`stable`) |
-| [`crates/relix-sources`](crates/relix-sources) | Native read-only loaders (`sqlite`, `postgres`, `sqlfile`) and `relix.toml` path resolution | Native only |
-| [`crates/relix-app`](crates/relix-app) | GPUI Kit Dock workbench, ER canvas, CLI entrypoint, and WASM web wrapper | Desktop + WASM (`nightly`) |
-| [`tools/schemagen`](tools/schemagen) | Deterministic synthetic schema generator (`100`/`500`/`2000` scale benchmarks) | Yes |
-
----
-
-## Security & Privacy Guarantees
-
-1. **No Business Data Queries**: Only system catalogs (`sqlite_master`/`PRAGMA`, `information_schema`/`pg_catalog`) or user-provided DDL/JSON are read.
-2. **Credential Redaction**: Passwords in PostgreSQL URLs/DSNs are stripped via `redact_connection_url` before entering UI labels, logs, errors, or stdout/stderr.
-3. **Credential-Free Persistence**: `relix.toml` stores only structural overrides (`confirmed_relations`, `rejected_relations`, `manual_relations`, `table_groups`, `collapsed_groups`, `node_positions`, `viewport`) and is keyed for PostgreSQL by a hash of normalized `host + port + database` without username or password.
-4. **Zero Telemetry / Network Calls**: RELIX performs zero analytics, update checks, or outbound network traffic beyond explicit user-initiated PostgreSQL metadata connections.
-
----
-
-## Further Documentation
-
-- [`docs/SPIKE-REPORT.md`](docs/SPIKE-REPORT.md) — Phase 4 desktop & WASM 100/500/2000 table FPS benchmarks
-- [`docs/KNOWN-ISSUES.md`](docs/KNOWN-ISSUES.md) — Known limitations, PostgreSQL live verification instructions, and post-MVP roadmap
-- [`docs/NOTES.md`](docs/NOTES.md) — Toolchain, WASM build, and design notes
-- [`docs/PROGRESS.md`](docs/PROGRESS.md) — Phase 0–7 execution log
+- [第二轮打磨计划](./docs/POLISH-PLAN.md)
+- [远程数据源说明（Saleor & Shopify）](./docs/sources/README.md)
+- [项目进度](./docs/PROGRESS.md)
+- [开发笔记与验证记录](./docs/NOTES.md)
+- [已知限制](./docs/KNOWN-ISSUES.md)
